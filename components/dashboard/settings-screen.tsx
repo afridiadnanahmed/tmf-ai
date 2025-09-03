@@ -16,6 +16,7 @@ export function SettingsScreen() {
   const [loading, setLoading] = useState(false)
   const [passwordLoading, setPasswordLoading] = useState(false)
   const [imageLoading, setImageLoading] = useState(false)
+  const [notificationsLoading, setNotificationsLoading] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
   
@@ -48,12 +49,72 @@ export function SettingsScreen() {
       })
     }
   }, [user])
+  
+  // Load user settings on component mount
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await fetch('/api/user/settings', {
+          credentials: 'include',
+        })
+        
+        if (response.ok) {
+          const data = await response.json()
+          if (data.settings?.notifications) {
+            setNotifications({
+              emailAlerts: data.settings.notifications.emailAlerts,
+              pushNotifications: data.settings.notifications.pushNotifications,
+              weeklyReports: data.settings.notifications.weeklyReports,
+              campaignUpdates: data.settings.notifications.campaignUpdates,
+            })
+          }
+        }
+      } catch (error) {
+        console.error('Failed to load settings:', error)
+      }
+    }
+    
+    loadSettings()
+  }, [])
 
-  const handleNotificationChange = (key: string) => {
-    setNotifications((prev) => ({
-      ...prev,
-      [key]: !prev[key as keyof typeof prev],
-    }))
+  const handleNotificationChange = async (key: string) => {
+    // Optimistically update UI
+    const newNotifications = {
+      ...notifications,
+      [key]: !notifications[key as keyof typeof notifications],
+    }
+    setNotifications(newNotifications)
+    
+    // Save to database
+    setNotificationsLoading(true)
+    try {
+      const response = await fetch('/api/user/settings', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          notifications: newNotifications
+        }),
+      })
+      
+      const data = await response.json()
+      
+      if (!response.ok) {
+        // Revert on error
+        setNotifications(notifications)
+        toast.error(data.error || 'Failed to update notification settings')
+      } else {
+        toast.success('Notification preferences updated')
+      }
+    } catch (error) {
+      // Revert on error
+      setNotifications(notifications)
+      toast.error('An error occurred while updating settings')
+    } finally {
+      setNotificationsLoading(false)
+    }
   }
   
   const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -411,6 +472,7 @@ export function SettingsScreen() {
                   <Switch
                     checked={notifications.emailAlerts}
                     onCheckedChange={() => handleNotificationChange("emailAlerts")}
+                    disabled={notificationsLoading}
                   />
                 </div>
 
@@ -422,6 +484,7 @@ export function SettingsScreen() {
                   <Switch
                     checked={notifications.pushNotifications}
                     onCheckedChange={() => handleNotificationChange("pushNotifications")}
+                    disabled={notificationsLoading}
                   />
                 </div>
 
@@ -433,6 +496,7 @@ export function SettingsScreen() {
                   <Switch
                     checked={notifications.weeklyReports}
                     onCheckedChange={() => handleNotificationChange("weeklyReports")}
+                    disabled={notificationsLoading}
                   />
                 </div>
 
@@ -444,14 +508,16 @@ export function SettingsScreen() {
                   <Switch
                     checked={notifications.campaignUpdates}
                     onCheckedChange={() => handleNotificationChange("campaignUpdates")}
+                    disabled={notificationsLoading}
                   />
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-3">
-                <Button variant="outline">Reset</Button>
-                <Button className="bg-blue-600 hover:bg-blue-700">Save Preferences</Button>
-              </div>
+              {notificationsLoading && (
+                <div className="text-sm text-gray-500 text-center">
+                  Saving notification preferences...
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
