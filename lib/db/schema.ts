@@ -13,6 +13,25 @@ export const users = pgTable('users', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+// User Settings table
+export const userSettings = pgTable('user_settings', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull().unique(),
+  // All settings stored as JSON for flexibility
+  settings: jsonb('settings').default({
+    notifications: {
+      emailAlerts: true,
+      pushNotifications: true,
+      weeklyReports: true,
+      campaignUpdates: true,
+    },
+    theme: 'light',
+    // Additional settings can be added here without schema changes
+  }).notNull(),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 // Roles table
 export const roles = pgTable('roles', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -91,12 +110,23 @@ export const integrations = pgTable('integrations', {
 });
 
 // Relations
-export const usersRelations = relations(users, ({ many }) => ({
+export const usersRelations = relations(users, ({ one, many }) => ({
   posts: many(posts),
   messages: many(messages),
   contacts: many(contacts),
   integrations: many(integrations),
   userRoles: many(userRoles),
+  settings: one(userSettings, {
+    fields: [users.id],
+    references: [userSettings.userId],
+  }),
+}));
+
+export const userSettingsRelations = relations(userSettings, ({ one }) => ({
+  user: one(users, {
+    fields: [userSettings.userId],
+    references: [users.id],
+  }),
 }));
 
 export const postsRelations = relations(posts, ({ one }) => ({
