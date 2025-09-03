@@ -1,9 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import Link from "next/link"
 import Image from "next/image"
+import { useRouter } from "next/navigation"
 import { BarChart3, Bell, Calendar, ChevronDown, LogOut, MessageSquare, Settings, Users, Zap } from "lucide-react"
+import { useAuth, getUserInitials } from "@/lib/auth-context"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -29,13 +31,28 @@ type Tab = "dashboard" | "integrations" | "crm" | "scheduler" | "messages" | "re
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<Tab>("dashboard")
   const [isLogoutOpen, setIsLogoutOpen] = useState(false)
+  const { user, loading, logout } = useAuth()
+  const router = useRouter()
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/')
+    }
+  }, [user, loading, router])
+
+  // Handle logout
+  const handleLogout = async () => {
+    setIsLogoutOpen(false)
+    await logout()
+  }
 
   /* ───────────────────────────────── DASHBOARD OVERVIEW ─────────────────────────────── */
   const renderDashboardOverview = () => (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Dashboard Overview</h1>
-        <p className="text-gray-600">Welcome back! Here’s your marketing performance at a glance.</p>
+        <p className="text-gray-600">Welcome back, {user?.name || 'User'}! Here's your marketing performance at a glance.</p>
       </div>
 
       {/* Stats cards */}
@@ -87,6 +104,24 @@ export default function DashboardPage() {
   )
 
   /* ────────────────────────────────────────── RENDER ────────────────────────────────── */
+  
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Don't render if not authenticated
+  if (!user) {
+    return null
+  }
+
   return (
     <>
       {/* Header */}
@@ -114,7 +149,9 @@ export default function DashboardPage() {
               <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="flex items-center space-x-2 px-2">
                   <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-medium">JD</span>
+                    <span className="text-white text-sm font-medium">
+                      {user ? getUserInitials(user.name) : ''}
+                    </span>
                   </div>
                   <ChevronDown className="w-4 h-4 text-gray-400" />
                 </Button>
@@ -192,10 +229,7 @@ export default function DashboardPage() {
             </Button>
             <Button
               className="bg-red-600 hover:bg-red-700"
-              onClick={() => {
-                setIsLogoutOpen(false)
-                window.location.href = "/"
-              }}
+              onClick={handleLogout}
             >
               Logout
             </Button>

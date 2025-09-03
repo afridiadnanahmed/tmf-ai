@@ -3,6 +3,7 @@
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Link from "next/link"
 import Image from "next/image"
 import { AuthModals } from "@/components/auth-modals"
@@ -26,6 +27,22 @@ import {
 export default function HomePage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isSignupOpen, setIsSignupOpen] = useState(false)
+
+  // Mock user data - in real app, this would come from auth context
+  const mockUser = {
+    name: "Adnan Ahmed",
+    avatar: null // Set to a URL string if user has an avatar
+  }
+
+  // Function to generate initials from name
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  }
 
   const handleSwitchToSignup = () => {
     setIsLoginOpen(false)
@@ -115,9 +132,17 @@ export default function HomePage() {
                     <div className="text-xs text-green-600">+8.2%</div>
                   </div>
                   <div className="bg-purple-50 rounded-lg p-3">
-                    <div className="flex items-center space-x-2">
-                      <Activity className="w-4 h-4 text-purple-600" />
-                      <span className="text-xs text-gray-600">Conversion</span>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <Activity className="w-4 h-4 text-purple-600" />
+                        <span className="text-xs text-gray-600">Conversion</span>
+                      </div>
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={mockUser.avatar || undefined} alt={mockUser.name} />
+                        <AvatarFallback className="bg-purple-600 text-white text-xs">
+                          {getInitials(mockUser.name)}
+                        </AvatarFallback>
+                      </Avatar>
                     </div>
                     <div className="text-lg font-bold text-gray-900">3.2%</div>
                     <div className="text-xs text-green-600">+0.5%</div>
