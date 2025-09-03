@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
+import { useAuth } from "@/lib/auth-context"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
@@ -38,7 +38,7 @@ export function AuthModals({
     password: "", 
     confirmPassword: "" 
   })
-  const router = useRouter()
+  const { login } = useAuth()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -46,33 +46,13 @@ export function AuthModals({
     setError(null)
 
     try {
-      const response = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: loginData.email,
-          password: loginData.password,
-        }),
-      })
-
-      const data = await response.json()
-
-      if (!response.ok) {
-        setError(data.error || "Login failed")
-        setIsLoading(false)
-        return
-      }
-
-      // Store user data in localStorage or context (you may want to use a proper auth solution)
-      localStorage.setItem("user", JSON.stringify(data.user))
-      
-      setIsLoading(false)
+      await login(loginData.email, loginData.password)
       onLoginClose()
-      router.push("/dashboard")
-    } catch (err) {
-      setError("An error occurred. Please try again.")
+      // Reset form
+      setLoginData({ email: "", password: "" })
+    } catch (error) {
+      setError(error instanceof Error ? error.message : 'Login failed')
+    } finally {
       setIsLoading(false)
     }
   }
@@ -82,9 +62,8 @@ export function AuthModals({
     setIsLoading(true)
     setError(null)
 
-    // Validate passwords match
     if (signupData.password !== signupData.confirmPassword) {
-      setError("Passwords do not match")
+      setError("Passwords don't match")
       setIsLoading(false)
       return
     }
@@ -106,18 +85,17 @@ export function AuthModals({
 
       if (!response.ok) {
         setError(data.error || "Registration failed")
-        setIsLoading(false)
         return
       }
 
       // Auto-login after successful registration
-      localStorage.setItem("user", JSON.stringify(data.user))
-      
-      setIsLoading(false)
+      await login(signupData.email, signupData.password)
       onSignupClose()
-      router.push("/dashboard")
+      // Reset form
+      setSignupData({ name: "", email: "", password: "", confirmPassword: "" })
     } catch (err) {
       setError("An error occurred. Please try again.")
+    } finally {
       setIsLoading(false)
     }
   }
@@ -146,13 +124,14 @@ export function AuthModals({
                 )}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                  <Input 
-                    type="email" 
-                    placeholder="Enter your email" 
-                    className="w-full" 
+                  <Input
+                    type="email"
+                    required
                     value={loginData.email}
                     onChange={(e) => setLoginData({ ...loginData, email: e.target.value })}
-                    required />
+                    className="w-full"
+                    placeholder="Enter your email"
+                  />
                 </div>
 
                 <div>
@@ -160,83 +139,59 @@ export function AuthModals({
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
-                      className="w-full pr-10"
+                      required
                       value={loginData.password}
                       onChange={(e) => setLoginData({ ...loginData, password: e.target.value })}
-                      required
+                      className="w-full pr-10"
+                      placeholder="Enter your password"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
 
-                <div className="text-right">
-                  <button type="button" className="text-sm text-blue-600 hover:text-blue-800">
-                    Forgot Password?
-                  </button>
-                </div>
-
-                <Button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
-                  disabled={isLoading}
-                >
-                  {isLoading ? "Signing in..." : "Login"}
+                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+                  {isLoading ? "Signing in..." : "Sign In"}
                 </Button>
-
-                <div className="text-center">
-                  <span className="text-gray-600">Don't have an account? </span>
-                  <button
-                    type="button"
-                    onClick={onSwitchToSignup}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
-                  >
-                    Sign up
-                  </button>
-                </div>
               </form>
+
+              <div className="mt-6 text-center">
+                <span className="text-sm text-gray-600">Don't have an account? </span>
+                <button
+                  onClick={onSwitchToSignup}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Sign up
+                </button>
+              </div>
             </div>
 
-            {/* Right side - Background Image */}
-            <div className="hidden md:block relative bg-gradient-to-br from-gray-900 to-black">
-              <div className="absolute inset-0 bg-black/50"></div>
-              <div className="relative h-full flex items-center justify-center p-8">
-                {/* AI Dashboard Mockup */}
-                <div className="space-y-4 w-full max-w-sm">
-                  <div className="bg-gray-800/80 rounded-lg p-4 backdrop-blur-sm border border-cyan-500/30">
-                    <div className="flex items-center space-x-2 mb-3">
-                      <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
-                      <span className="text-cyan-400 text-sm font-mono">AI Analytics</span>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="h-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded w-3/4"></div>
-                      <div className="h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded w-1/2"></div>
-                      <div className="h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded w-5/6"></div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-800/80 rounded-lg p-4 backdrop-blur-sm border border-blue-500/30">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-blue-400 text-sm font-mono">Performance</span>
-                      <span className="text-green-400 text-xs">+24.5%</span>
-                    </div>
-                    <div className="flex items-end space-x-1 h-16">
-                      {[40, 65, 45, 80, 55, 70, 85].map((height, i) => (
-                        <div
-                          key={i}
-                          className="bg-gradient-to-t from-blue-600 to-cyan-400 rounded-t w-3"
-                          style={{ height: `${height}%` }}
-                        ></div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+            {/* Right side - Image */}
+            <div className="hidden md:block bg-gradient-to-br from-blue-600 to-purple-600 p-12 relative">
+              <div className="h-full flex flex-col justify-center text-white">
+                <h3 className="text-3xl font-bold mb-4">Boost Your Marketing with AI</h3>
+                <p className="text-lg mb-8 text-blue-100">
+                  Join thousands of businesses using our AI-powered platform to transform their digital marketing.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-center">
+                    <div className="w-2 h-2 bg-white rounded-full mr-3"></div>
+                    <span>AI-driven insights and automation</span>
+                  </li>
+                  <li className="flex items-center">
+                    <div className="w-2 h-2 bg-white rounded-full mr-3"></div>
+                    <span>Multi-platform integration</span>
+                  </li>
+                  <li className="flex items-center">
+                    <div className="w-2 h-2 bg-white rounded-full mr-3"></div>
+                    <span>Real-time analytics</span>
+                  </li>
+                </ul>
               </div>
             </div>
           </div>
@@ -246,17 +201,39 @@ export function AuthModals({
       {/* Signup Modal */}
       <Dialog open={isSignupOpen} onOpenChange={onSignupClose}>
         <DialogContent className="max-w-4xl p-0 overflow-hidden">
-          <div className="grid md:grid-cols-2 min-h-[500px]">
-            {/* Left side - Form */}
+          <div className="grid md:grid-cols-2 min-h-[600px]">
+            {/* Left side - Image */}
+            <div className="hidden md:block bg-gradient-to-br from-purple-600 to-blue-600 p-12 relative">
+              <div className="h-full flex flex-col justify-center text-white">
+                <h3 className="text-3xl font-bold mb-4">Start Your AI Journey</h3>
+                <p className="text-lg mb-8 text-purple-100">
+                  Create your account and unlock the power of AI-driven marketing automation.
+                </p>
+                <ul className="space-y-3">
+                  <li className="flex items-center">
+                    <div className="w-2 h-2 bg-white rounded-full mr-3"></div>
+                    <span>Free to get started</span>
+                  </li>
+                  <li className="flex items-center">
+                    <div className="w-2 h-2 bg-white rounded-full mr-3"></div>
+                    <span>No credit card required</span>
+                  </li>
+                  <li className="flex items-center">
+                    <div className="w-2 h-2 bg-white rounded-full mr-3"></div>
+                    <span>Full access to all features</span>
+                  </li>
+                </ul>
+              </div>
+            </div>
+
+            {/* Right side - Form */}
             <div className="p-8 flex flex-col justify-center">
               <DialogHeader className="mb-6">
                 <div className="flex justify-center mb-6">
                   <Image src="/logo.png" alt="The Meta Future" width={120} height={40} className="h-8 w-auto" />
                 </div>
-                <DialogTitle className="text-2xl font-bold text-center text-gray-900">Join TMF AI</DialogTitle>
-                <p className="text-center text-gray-600 mt-2">
-                  Create your account and start transforming your marketing
-                </p>
+                <DialogTitle className="text-2xl font-bold text-center text-gray-900">Create Your Account</DialogTitle>
+                <p className="text-center text-gray-600 mt-2">Join TMF AI and revolutionize your marketing</p>
               </DialogHeader>
 
               <form onSubmit={handleSignup} className="space-y-4">
@@ -265,26 +242,29 @@ export function AuthModals({
                     {error}
                   </div>
                 )}
+                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Full Name</label>
-                  <Input 
-                    type="text" 
-                    placeholder="Enter your full name" 
-                    className="w-full" 
+                  <Input
+                    type="text"
+                    required
                     value={signupData.name}
                     onChange={(e) => setSignupData({ ...signupData, name: e.target.value })}
-                    required />
+                    className="w-full"
+                    placeholder="Enter your full name"
+                  />
                 </div>
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Email Address</label>
-                  <Input 
-                    type="email" 
-                    placeholder="Enter your email" 
-                    className="w-full" 
+                  <Input
+                    type="email"
+                    required
                     value={signupData.email}
                     onChange={(e) => setSignupData({ ...signupData, email: e.target.value })}
-                    required />
+                    className="w-full"
+                    placeholder="Enter your email"
+                  />
                 </div>
 
                 <div>
@@ -292,16 +272,16 @@ export function AuthModals({
                   <div className="relative">
                     <Input
                       type={showPassword ? "text" : "password"}
-                      placeholder="Enter your password"
-                      className="w-full pr-10"
+                      required
                       value={signupData.password}
                       onChange={(e) => setSignupData({ ...signupData, password: e.target.value })}
-                      required
+                      className="w-full pr-10"
+                      placeholder="Create a password"
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -313,77 +293,35 @@ export function AuthModals({
                   <div className="relative">
                     <Input
                       type={showConfirmPassword ? "text" : "password"}
-                      placeholder="Confirm your password"
-                      className="w-full pr-10"
+                      required
                       value={signupData.confirmPassword}
                       onChange={(e) => setSignupData({ ...signupData, confirmPassword: e.target.value })}
-                      required
+                      className="w-full pr-10"
+                      placeholder="Confirm your password"
                     />
                     <button
                       type="button"
                       onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
                     >
                       {showConfirmPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
                   </div>
                 </div>
 
-                <Button
-                  type="submit"
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3"
-                  disabled={isLoading}
-                >
+                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
                   {isLoading ? "Creating Account..." : "Create Account"}
                 </Button>
-
-                <div className="text-center">
-                  <span className="text-gray-600">Already have an account? </span>
-                  <button
-                    type="button"
-                    onClick={onSwitchToLogin}
-                    className="text-blue-600 hover:text-blue-800 font-medium"
-                  >
-                    Sign in
-                  </button>
-                </div>
               </form>
-            </div>
 
-            {/* Right side - Background Image */}
-            <div className="hidden md:block relative bg-gradient-to-br from-gray-900 to-black">
-              <div className="absolute inset-0 bg-black/50"></div>
-              <div className="relative h-full flex items-center justify-center p-8">
-                {/* AI Dashboard Mockup */}
-                <div className="space-y-4 w-full max-w-sm">
-                  <div className="bg-gray-800/80 rounded-lg p-4 backdrop-blur-sm border border-cyan-500/30">
-                    <div className="flex items-center space-x-2 mb-3">
-                      <div className="w-2 h-2 bg-cyan-400 rounded-full"></div>
-                      <span className="text-cyan-400 text-sm font-mono">AI Analytics</span>
-                    </div>
-                    <div className="space-y-2">
-                      <div className="h-2 bg-gradient-to-r from-cyan-500 to-blue-500 rounded w-3/4"></div>
-                      <div className="h-2 bg-gradient-to-r from-purple-500 to-pink-500 rounded w-1/2"></div>
-                      <div className="h-2 bg-gradient-to-r from-green-500 to-emerald-500 rounded w-5/6"></div>
-                    </div>
-                  </div>
-
-                  <div className="bg-gray-800/80 rounded-lg p-4 backdrop-blur-sm border border-blue-500/30">
-                    <div className="flex items-center justify-between mb-3">
-                      <span className="text-blue-400 text-sm font-mono">Performance</span>
-                      <span className="text-green-400 text-xs">+24.5%</span>
-                    </div>
-                    <div className="flex items-end space-x-1 h-16">
-                      {[40, 65, 45, 80, 55, 70, 85].map((height, i) => (
-                        <div
-                          key={i}
-                          className="bg-gradient-to-t from-blue-600 to-cyan-400 rounded-t w-3"
-                          style={{ height: `${height}%` }}
-                        ></div>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+              <div className="mt-6 text-center">
+                <span className="text-sm text-gray-600">Already have an account? </span>
+                <button
+                  onClick={onSwitchToLogin}
+                  className="text-sm text-blue-600 hover:text-blue-700 font-medium"
+                >
+                  Sign in
+                </button>
               </div>
             </div>
           </div>

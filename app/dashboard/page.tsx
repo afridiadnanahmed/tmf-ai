@@ -1,22 +1,16 @@
 "use client"
 
-import { useState } from "react"
-import Link from "next/link"
-import Image from "next/image"
-import { BarChart3, Bell, Calendar, ChevronDown, LogOut, MessageSquare, Settings, Users, Zap } from "lucide-react"
+import { useState, useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { BarChart3, Calendar, LogOut, MessageSquare, Settings, Users, Zap } from "lucide-react"
+import { useAuth } from "@/lib/auth-context"
 
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, Filter } from "lucide-react"
 
+import { Header } from "@/components/common/header"
 import { IntegrationsScreen } from "@/components/dashboard/integrations-screen"
 import { CRMScreen } from "@/components/dashboard/crm-screen"
 import { PostSchedulerScreen } from "@/components/dashboard/post-scheduler-screen"
@@ -29,13 +23,28 @@ type Tab = "dashboard" | "integrations" | "crm" | "scheduler" | "messages" | "re
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<Tab>("dashboard")
   const [isLogoutOpen, setIsLogoutOpen] = useState(false)
+  const { user, loading, logout } = useAuth()
+  const router = useRouter()
+
+  // Redirect to login if not authenticated
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/')
+    }
+  }, [user, loading, router])
+
+  // Handle logout
+  const handleLogout = async () => {
+    setIsLogoutOpen(false)
+    await logout()
+  }
 
   /* ───────────────────────────────── DASHBOARD OVERVIEW ─────────────────────────────── */
   const renderDashboardOverview = () => (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-bold text-gray-900 mb-2">Dashboard Overview</h1>
-        <p className="text-gray-600">Welcome back! Here’s your marketing performance at a glance.</p>
+        <p className="text-gray-600">Welcome back, {user?.name || 'User'}! Here's your marketing performance at a glance.</p>
       </div>
 
       {/* Stats cards */}
@@ -87,49 +96,27 @@ export default function DashboardPage() {
   )
 
   /* ────────────────────────────────────────── RENDER ────────────────────────────────── */
+  
+  // Show loading state while checking authentication
+  if (loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+          <p className="mt-4 text-gray-600">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Don't render if not authenticated
+  if (!user) {
+    return null
+  }
+
   return (
     <>
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            <Image src="/logo.png" alt="The Meta Future" width={120} height={40} priority />
-          </Link>
-
-          <div className="flex items-center space-x-4">
-            {/* Notifications */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Open notifications">
-                  <Bell className="w-5 h-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="min-w-64">
-                <DropdownMenuItem className="font-medium">No new notifications</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Profile */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 px-2">
-                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-medium">JD</span>
-                  </div>
-                  <ChevronDown className="w-4 h-4 text-gray-400" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onSelect={() => setActiveTab("settings")}>Settings</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600 focus:text-red-600" onSelect={() => setIsLogoutOpen(true)}>
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </header>
+      <Header user={user} setActiveTab={setActiveTab} setIsLogoutOpen={setIsLogoutOpen} />
 
       <div className="flex min-h-[calc(100vh-64px)]">
         {/* Sidebar */}
@@ -192,10 +179,7 @@ export default function DashboardPage() {
             </Button>
             <Button
               className="bg-red-600 hover:bg-red-700"
-              onClick={() => {
-                setIsLogoutOpen(false)
-                window.location.href = "/"
-              }}
+              onClick={handleLogout}
             >
               Logout
             </Button>

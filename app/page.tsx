@@ -1,11 +1,15 @@
 "use client"
 
 import { useState } from "react"
+import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Link from "next/link"
 import Image from "next/image"
 import { AuthModals } from "@/components/auth-modals"
+import { Header } from "@/components/common/header"
+import { useAuth } from "@/lib/auth-context"
 import {
   BarChart3,
   Users,
@@ -26,6 +30,24 @@ import {
 export default function HomePage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false)
   const [isSignupOpen, setIsSignupOpen] = useState(false)
+  const { user } = useAuth()
+  const router = useRouter()
+
+  // Mock user data for dashboard mockup preview
+  const mockUser = {
+    name: "Adnan Ahmed",
+    avatar: null // Set to a URL string if user has an avatar
+  }
+
+  // Function to generate initials from name
+  const getInitials = (name: string) => {
+    return name
+      .split(' ')
+      .map(word => word[0])
+      .join('')
+      .toUpperCase()
+      .slice(0, 2)
+  }
 
   const handleSwitchToSignup = () => {
     setIsLoginOpen(false)
@@ -40,21 +62,11 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <header className="border-b border-gray-100">
-        <div className="container mx-auto px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center">
-            <Image src="/logo.png" alt="The Meta Future" width={150} height={50} className="h-10 w-auto" />
-          </Link>
-          <div className="flex items-center space-x-4">
-            <Button variant="ghost" className="text-gray-600 hover:text-gray-900" onClick={() => setIsLoginOpen(true)}>
-              Login
-            </Button>
-            <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={() => setIsSignupOpen(true)}>
-              Sign Up
-            </Button>
-          </div>
-        </div>
-      </header>
+      <Header 
+        user={user} 
+        onLoginClick={() => setIsLoginOpen(true)}
+        onSignupClick={() => setIsSignupOpen(true)}
+      />
 
       {/* Hero Section */}
       <section className="container mx-auto px-4 py-16 lg:py-24">
@@ -76,9 +88,9 @@ export default function HomePage() {
             </p>
             <Button
               className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
-              onClick={() => setIsSignupOpen(true)}
+              onClick={() => user ? router.push('/dashboard') : setIsSignupOpen(true)}
             >
-              Get Started
+              {user ? 'Go To Dashboard' : 'Get Started'}
             </Button>
           </div>
 
@@ -115,9 +127,17 @@ export default function HomePage() {
                     <div className="text-xs text-green-600">+8.2%</div>
                   </div>
                   <div className="bg-purple-50 rounded-lg p-3">
-                    <div className="flex items-center space-x-2">
-                      <Activity className="w-4 h-4 text-purple-600" />
-                      <span className="text-xs text-gray-600">Conversion</span>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center space-x-2">
+                        <Activity className="w-4 h-4 text-purple-600" />
+                        <span className="text-xs text-gray-600">Conversion</span>
+                      </div>
+                      <Avatar className="h-6 w-6">
+                        <AvatarImage src={mockUser.avatar || undefined} alt={mockUser.name} />
+                        <AvatarFallback className="bg-purple-600 text-white text-xs">
+                          {getInitials(mockUser.name)}
+                        </AvatarFallback>
+                      </Avatar>
                     </div>
                     <div className="text-lg font-bold text-gray-900">3.2%</div>
                     <div className="text-xs text-green-600">+0.5%</div>
@@ -331,9 +351,9 @@ export default function HomePage() {
           </p>
           <Button
             className="bg-white text-blue-600 hover:bg-gray-100 px-8 py-3 text-lg font-semibold"
-            onClick={() => setIsSignupOpen(true)}
+            onClick={() => user ? router.push('/dashboard') : setIsSignupOpen(true)}
           >
-            Get Started Free
+            {user ? 'Go To Dashboard' : 'Get Started Free'}
           </Button>
         </div>
       </section>

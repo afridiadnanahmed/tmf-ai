@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
 import { db } from '@/lib/db';
 import { users } from '@/lib/db/schema';
@@ -51,6 +52,21 @@ export async function POST(request: Request) {
 
     // Return user data (excluding password)
     const { password: _, ...userWithoutPassword } = user[0];
+
+    // Set session cookie (simple implementation - in production use JWT or proper session management)
+    const cookieStore = await cookies();
+    cookieStore.set('session', JSON.stringify({
+      userId: userWithoutPassword.id,
+      email: userWithoutPassword.email,
+      name: userWithoutPassword.name,
+      image: userWithoutPassword.image
+    }), {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 60 * 60 * 24 * 7, // 7 days
+      path: '/'
+    });
 
     return NextResponse.json(
       { 
