@@ -58,7 +58,8 @@ export async function POST(request: Request) {
     cookieStore.set('session', JSON.stringify({
       userId: userWithoutPassword.id,
       email: userWithoutPassword.email,
-      name: userWithoutPassword.name
+      name: userWithoutPassword.name,
+      image: userWithoutPassword.image
     }), {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',

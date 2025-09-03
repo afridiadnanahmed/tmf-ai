@@ -1,24 +1,16 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import Link from "next/link"
-import Image from "next/image"
 import { useRouter } from "next/navigation"
-import { BarChart3, Bell, Calendar, ChevronDown, LogOut, MessageSquare, Settings, Users, Zap } from "lucide-react"
-import { useAuth, getUserInitials } from "@/lib/auth-context"
+import { BarChart3, Calendar, LogOut, MessageSquare, Settings, Users, Zap } from "lucide-react"
+import { useAuth } from "@/lib/auth-context"
 
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { TrendingUp, Filter } from "lucide-react"
 
+import { Header } from "@/components/common/header"
 import { IntegrationsScreen } from "@/components/dashboard/integrations-screen"
 import { CRMScreen } from "@/components/dashboard/crm-screen"
 import { PostSchedulerScreen } from "@/components/dashboard/post-scheduler-screen"
@@ -124,49 +116,7 @@ export default function DashboardPage() {
 
   return (
     <>
-      {/* Header */}
-      <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
-        <div className="px-6 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
-            <Image src="/logo.png" alt="The Meta Future" width={120} height={40} priority />
-          </Link>
-
-          <div className="flex items-center space-x-4">
-            {/* Notifications */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="icon" aria-label="Open notifications">
-                  <Bell className="w-5 h-5" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end" className="min-w-64">
-                <DropdownMenuItem className="font-medium">No new notifications</DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-
-            {/* Profile */}
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="ghost" className="flex items-center space-x-2 px-2">
-                  <div className="w-8 h-8 bg-blue-600 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-medium">
-                      {user ? getUserInitials(user.name) : ''}
-                    </span>
-                  </div>
-                  <ChevronDown className="w-4 h-4 text-gray-400" />
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onSelect={() => setActiveTab("settings")}>Settings</DropdownMenuItem>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-red-600 focus:text-red-600" onSelect={() => setIsLogoutOpen(true)}>
-                  Logout
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </div>
-        </div>
-      </header>
+      <Header user={user} setActiveTab={setActiveTab} setIsLogoutOpen={setIsLogoutOpen} />
 
       <div className="flex min-h-[calc(100vh-64px)]">
         {/* Sidebar */}

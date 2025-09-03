@@ -38,3 +38,6 @@ next-env.d.ts
 
 # drizzle
 /drizzle
+
+# uploaded files
+/public/uploads

@@ -1,15 +1,24 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ChevronRight, User, Bell, Palette, Lock } from "lucide-react"
+import { ChevronRight, User, Bell, Palette, Lock, Upload, X } from "lucide-react"
+import { useAuth, getUserInitials } from "@/lib/auth-context"
+import { toast } from "sonner"
 
 export function SettingsScreen() {
+  const { user, refreshUser } = useAuth()
+  const [loading, setLoading] = useState(false)
+  const [passwordLoading, setPasswordLoading] = useState(false)
+  const [imageLoading, setImageLoading] = useState(false)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  
   const [notifications, setNotifications] = useState({
     emailAlerts: true,
     pushNotifications: true,
@@ -18,18 +27,189 @@ export function SettingsScreen() {
   })
 
   const [profile, setProfile] = useState({
-    name: "John Doe",
-    email: "john@example.com",
+    name: user?.name || "",
+    email: user?.email || "",
+    image: user?.image || "",
+  })
+  
+  const [passwordData, setPasswordData] = useState({
     currentPassword: "",
     newPassword: "",
     confirmPassword: "",
   })
+  
+  // Update profile state when user changes
+  useEffect(() => {
+    if (user) {
+      setProfile({
+        name: user.name || "",
+        email: user.email || "",
+        image: user.image || "",
+      })
+    }
+  }, [user])
 
   const handleNotificationChange = (key: string) => {
     setNotifications((prev) => ({
       ...prev,
       [key]: !prev[key as keyof typeof prev],
     }))
+  }
+  
+  const handleImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif', 'image/webp']
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please select a valid image file (JPG, PNG, GIF, or WebP)')
+      return
+    }
+    
+    // Validate file size (1MB)
+    const maxSize = 1 * 1024 * 1024
+    if (file.size > maxSize) {
+      toast.error('Image size must be less than 1MB')
+      return
+    }
+    
+    // Create preview
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setImagePreview(reader.result as string)
+    }
+    reader.readAsDataURL(file)
+    
+    // Auto upload
+    handleImageUpload(file)
+  }
+  
+  const handleImageUpload = async (file: File) => {
+    setImageLoading(true)
+    try {
+      const formData = new FormData()
+      formData.append('image', file)
+      
+      const response = await fetch('/api/user/upload-image', {
+        method: 'POST',
+        credentials: 'include',
+        body: formData,
+      })
+      
+      const data = await response.json()
+      
+      if (response.ok) {
+        toast.success('Profile photo updated successfully')
+        // Update local state
+        setProfile(prev => ({ ...prev, image: data.imageUrl }))
+        // Refresh user context
+        await refreshUser()
+        // Clear preview
+        setImagePreview(null)
+      } else {
+        toast.error(data.error || 'Failed to upload image')
+        setImagePreview(null)
+      }
+    } catch (error) {
+      toast.error('An error occurred while uploading image')
+      setImagePreview(null)
+    } finally {
+      setImageLoading(false)
+      // Reset file input
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''
+      }
+    }
+  }
+  
+  const handleRemoveImage = () => {
+    setImagePreview(null)
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+  
+  const handleProfileUpdate = async () => {
+    setLoading(true)
+    try {
+      const response = await fetch('/api/user/profile', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify(profile),
+      })
+      
+      const data = await response.json()
+      
+      if (response.ok) {
+        toast.success('Profile updated successfully')
+        // Update user context with fresh data
+        await refreshUser()
+      } else {
+        toast.error(data.error || 'Failed to update profile')
+      }
+    } catch (error) {
+      toast.error('An error occurred while updating profile')
+    } finally {
+      setLoading(false)
+    }
+  }
+  
+  const handlePasswordChange = async () => {
+    
+    // Validate all fields are filled
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmPassword) {
+      toast.error('Please fill in all password fields')
+      return
+    }
+    
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error('Passwords do not match')
+      return
+    }
+    
+    if (passwordData.newPassword.length < 6) {
+      toast.error('Password must be at least 6 characters')
+      return
+    }
+    
+    setPasswordLoading(true)
+    try {
+      const response = await fetch('/api/user/change-password', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({
+          currentPassword: passwordData.currentPassword,
+          newPassword: passwordData.newPassword,
+        }),
+      })
+      
+      const data = await response.json()
+      console.log('Password change response:', response.status, data)
+      
+      if (response.ok) {
+        toast.success('Password changed successfully')
+        setPasswordData({
+          currentPassword: '',
+          newPassword: '',
+          confirmPassword: '',
+        })
+      } else {
+        console.error('Password change failed:', data)
+        toast.error(data.error || 'Failed to change password')
+      }
+    } catch (error) {
+      console.error('Password change error:', error)
+      toast.error('An error occurred while changing password')
+    } finally {
+      setPasswordLoading(false)
+    }
   }
 
   return (
@@ -74,15 +254,52 @@ export function SettingsScreen() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex items-center space-x-6">
-                <Avatar className="w-20 h-20">
-                  <AvatarImage src="/placeholder.svg" />
-                  <AvatarFallback className="text-lg">JD</AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                  <Avatar className="w-20 h-20">
+                    <AvatarImage src={imagePreview || profile.image || undefined} />
+                    <AvatarFallback className="text-lg bg-blue-600 text-white">
+                      {user ? getUserInitials(user.name) : 'U'}
+                    </AvatarFallback>
+                  </Avatar>
+                  {imagePreview && (
+                    <button
+                      onClick={handleRemoveImage}
+                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+                </div>
                 <div>
-                  <Button variant="outline" size="sm">
-                    Change Photo
-                  </Button>
-                  <p className="text-sm text-gray-500 mt-1">JPG, GIF or PNG. 1MB max.</p>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/gif,image/webp"
+                    onChange={handleImageSelect}
+                    className="hidden"
+                    id="avatar-upload"
+                  />
+                  <label htmlFor="avatar-upload">
+                    <Button 
+                      variant="outline" 
+                      size="sm" 
+                      disabled={imageLoading}
+                      onClick={(e) => {
+                        e.preventDefault()
+                        fileInputRef.current?.click()
+                      }}
+                    >
+                      {imageLoading ? (
+                        <>Loading...</>
+                      ) : (
+                        <>
+                          <Upload className="w-4 h-4 mr-2" />
+                          Change Photo
+                        </>
+                      )}
+                    </Button>
+                  </label>
+                  <p className="text-sm text-gray-500 mt-1">JPG, PNG, GIF or WebP. Max 1MB.</p>
                 </div>
               </div>
 
@@ -104,7 +321,7 @@ export function SettingsScreen() {
                 </div>
               </div>
 
-              <div className="pt-4 border-t">
+              <div className="pt-4 pb-4 border-t border-b">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">Change Password</h3>
                 <div className="space-y-4">
                   <div>
@@ -112,8 +329,8 @@ export function SettingsScreen() {
                     <Input
                       type="password"
                       placeholder="Enter current password"
-                      value={profile.currentPassword}
-                      onChange={(e) => setProfile((prev) => ({ ...prev, currentPassword: e.target.value }))}
+                      value={passwordData.currentPassword}
+                      onChange={(e) => setPasswordData((prev) => ({ ...prev, currentPassword: e.target.value }))}
                     />
                   </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -121,9 +338,9 @@ export function SettingsScreen() {
                       <label className="block text-sm font-medium text-gray-700 mb-2">New Password</label>
                       <Input
                         type="password"
-                        placeholder="Enter new password"
-                        value={profile.newPassword}
-                        onChange={(e) => setProfile((prev) => ({ ...prev, newPassword: e.target.value }))}
+                        placeholder="Enter new password (min 6 characters)"
+                        value={passwordData.newPassword}
+                        onChange={(e) => setPasswordData((prev) => ({ ...prev, newPassword: e.target.value }))}
                       />
                     </div>
                     <div>
@@ -131,17 +348,45 @@ export function SettingsScreen() {
                       <Input
                         type="password"
                         placeholder="Confirm new password"
-                        value={profile.confirmPassword}
-                        onChange={(e) => setProfile((prev) => ({ ...prev, confirmPassword: e.target.value }))}
+                        value={passwordData.confirmPassword}
+                        onChange={(e) => setPasswordData((prev) => ({ ...prev, confirmPassword: e.target.value }))}
                       />
                     </div>
                   </div>
+                    {(passwordData.currentPassword || passwordData.newPassword || passwordData.confirmPassword) && (
+                      <div className="flex justify-end">
+                        <Button 
+                          className="bg-green-600 hover:bg-green-700" 
+                          onClick={handlePasswordChange}
+                          disabled={passwordLoading}
+                        >
+                          {passwordLoading ? 'Changing...' : 'Change Password'}
+                        </Button>
+                      </div>
+                    )}
                 </div>
               </div>
 
-              <div className="flex justify-end space-x-3">
-                <Button variant="outline">Cancel</Button>
-                <Button className="bg-blue-600 hover:bg-blue-700">Save Changes</Button>
+              <div className="flex flex-col gap-4">
+                <div className="flex justify-end space-x-3">
+                  <Button 
+                    variant="outline"
+                    onClick={() => setProfile({
+                      name: user?.name || "",
+                      email: user?.email || "",
+                      image: user?.image || "",
+                    })}
+                  >
+                    Cancel
+                  </Button>
+                  <Button 
+                    className="bg-blue-600 hover:bg-blue-700" 
+                    onClick={handleProfileUpdate}
+                    disabled={loading}
+                  >
+                    {loading ? 'Saving...' : 'Save Profile Changes'}
+                  </Button>
+                </div>
               </div>
             </CardContent>
           </Card>
