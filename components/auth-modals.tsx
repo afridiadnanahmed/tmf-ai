@@ -155,7 +155,7 @@ export function AuthModals({
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+                <Button type="submit" style={{ background: 'linear-gradient(90deg, #459AFF 0%, #9F8BF9 100%)' }} className="w-full hover:opacity-90 text-white" disabled={isLoading}>
                   {isLoading ? "Signing in..." : "Sign In"}
                 </Button>
               </form>
@@ -309,7 +309,7 @@ export function AuthModals({
                   </div>
                 </div>
 
-                <Button type="submit" className="w-full bg-blue-600 hover:bg-blue-700" disabled={isLoading}>
+                <Button type="submit" style={{ background: 'linear-gradient(90deg, #459AFF 0%, #9F8BF9 100%)' }} className="w-full hover:opacity-90 text-white" disabled={isLoading}>
                   {isLoading ? "Creating Account..." : "Create Account"}
                 </Button>
               </form>

@@ -107,7 +107,7 @@ export function CRMScreen() {
           <Button variant="outline" onClick={handleExport}>
             Export
           </Button>
-          <Button className="bg-blue-600 hover:bg-blue-700" onClick={() => setShowAddLead(true)}>
+          <Button style={{ background: 'linear-gradient(90deg, #459AFF 0%, #9F8BF9 100%)' }} className="hover:opacity-90 text-white" onClick={() => setShowAddLead(true)}>
             <Plus className="w-4 h-4 mr-2" />
             Add Lead
           </Button>
@@ -243,7 +243,7 @@ export function CRMScreen() {
               <Input placeholder="Enter campaign name" />
             </div>
             <div className="flex space-x-3 pt-4">
-              <Button className="flex-1 bg-blue-600 hover:bg-blue-700">Add Lead</Button>
+              <Button style={{ background: 'linear-gradient(90deg, #459AFF 0%, #9F8BF9 100%)' }} className="flex-1 hover:opacity-90 text-white">Add Lead</Button>
               <Button variant="outline" className="flex-1 bg-transparent" onClick={() => setShowAddLead(false)}>
                 Cancel
               </Button>

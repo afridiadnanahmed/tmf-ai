@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node:*)",
+      "Bash(grep:*)",
+      "Bash(curl:*)",
+      "Bash(python3:*)",
+      "Bash(sqlite3:*)",
+      "Bash(npx tsx:*)",
+      "Bash(cat:*)",
+      "Bash(DATABASE_URL=\"postgresql://adnan:root@localhost:5432/tmfai\" npx tsx check-oauth-apps.js)",
+      "Bash(DATABASE_URL=\"postgresql://adnan:root@localhost:5432/tmfai\" npx tsx check-oauth-secret.js)",
+      "Bash(npm run build:*)",
+      "Bash(pkill:*)",
+      "Bash(npm install:*)",
+      "Read(//tmp/**)",
+      "Bash(timeout:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

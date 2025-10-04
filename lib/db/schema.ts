@@ -1,4 +1,4 @@
-import { pgTable, serial, text, varchar, timestamp, boolean, integer, uuid, jsonb } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, varchar, timestamp, boolean, integer, uuid, jsonb, numeric } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Users table
@@ -95,6 +95,21 @@ export const contacts = pgTable('contacts', {
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
+// OAuth Applications table - stores OAuth app credentials per user
+export const oauthApps = pgTable('oauth_apps', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  platform: varchar('platform', { length: 50 }).notNull(), // facebook, google, etc.
+  clientId: text('client_id').notNull(),
+  clientSecret: text('client_secret'), // Encrypted in production
+  redirectUri: text('redirect_uri'),
+  scopes: jsonb('scopes'), // Array of scopes
+  metadata: jsonb('metadata'), // Additional platform-specific config
+  isActive: boolean('is_active').default(true),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
 // Integrations table
 export const integrations = pgTable('integrations', {
   id: uuid('id').defaultRandom().primaryKey(),
@@ -105,6 +120,38 @@ export const integrations = pgTable('integrations', {
   expiresAt: timestamp('expires_at'),
   metadata: jsonb('metadata'),
   isActive: boolean('is_active').default(true),
+  oauthAppId: uuid('oauth_app_id').references(() => oauthApps.id), // Link to OAuth app used
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const comments = pgTable('comments', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  platform: varchar('platform', { length: 50 }).notNull(),
+  platformPostId: varchar('platform_post_id', { length: 255 }),
+  platformCommentId: varchar('platform_comment_id', { length: 255 }),
+  content: text('content').notNull(),
+  parentCommentId: uuid('parent_comment_id'),
+  isReply: boolean('is_reply').default(false),
+  status: varchar('status', { length: 20 }).default('sent'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+export const campaigns = pgTable('campaigns', {
+  id: uuid('id').defaultRandom().primaryKey(),
+  userId: uuid('user_id').references(() => users.id).notNull(),
+  integrationId: uuid('integration_id').references(() => integrations.id).notNull(),
+  platform: varchar('platform', { length: 50 }).notNull(),
+  platformCampaignId: varchar('platform_campaign_id', { length: 255 }),
+  name: varchar('name', { length: 255 }).notNull(),
+  status: varchar('status', { length: 50 }).default('active'),
+  spend: numeric('spend', { precision: 12, scale: 2 }).default('0'),
+  clicks: integer('clicks').default(0),
+  impressions: integer('impressions').default(0),
+  conversions: integer('conversions').default(0),
+  metadata: jsonb('metadata'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
@@ -115,7 +162,10 @@ export const usersRelations = relations(users, ({ one, many }) => ({
   messages: many(messages),
   contacts: many(contacts),
   integrations: many(integrations),
+  oauthApps: many(oauthApps),
   userRoles: many(userRoles),
+  comments: many(comments),
+  campaigns: many(campaigns),
   settings: one(userSettings, {
     fields: [users.id],
     references: [userSettings.userId],
@@ -159,6 +209,36 @@ export const integrationsRelations = relations(integrations, ({ one }) => ({
   user: one(users, {
     fields: [integrations.userId],
     references: [users.id],
+  }),
+  oauthApp: one(oauthApps, {
+    fields: [integrations.oauthAppId],
+    references: [oauthApps.id],
+  }),
+}));
+
+export const oauthAppsRelations = relations(oauthApps, ({ one, many }) => ({
+  user: one(users, {
+    fields: [oauthApps.userId],
+    references: [users.id],
+  }),
+  integrations: many(integrations),
+}));
+
+export const commentsRelations = relations(comments, ({ one }) => ({
+  user: one(users, {
+    fields: [comments.userId],
+    references: [users.id],
+  }),
+}));
+
+export const campaignsRelations = relations(campaigns, ({ one }) => ({
+  user: one(users, {
+    fields: [campaigns.userId],
+    references: [users.id],
+  }),
+  integration: one(integrations, {
+    fields: [campaigns.integrationId],
+    references: [integrations.id],
   }),
 }));
 
