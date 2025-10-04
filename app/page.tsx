@@ -87,7 +87,8 @@ export default function HomePage() {
               streamline your customer relationships and boost your business growth.
             </p>
             <Button
-              className="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 text-lg"
+              style={{ background: 'linear-gradient(90deg, #459AFF 0%, #9F8BF9 100%)' }}
+              className="hover:opacity-90 text-white px-8 py-3 text-lg"
               onClick={() => user ? router.push('/dashboard') : setIsSignupOpen(true)}
             >
               {user ? 'Go To Dashboard' : 'Get Started'}

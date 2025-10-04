@@ -82,7 +82,7 @@ export function PostSchedulerScreen() {
           <h1 className="text-2xl font-bold text-gray-900 mb-2">Post Scheduler</h1>
           <p className="text-gray-600">Create, schedule, and manage your social media posts</p>
         </div>
-        <Button onClick={() => setShowCreatePost(true)} className="bg-blue-600 hover:bg-blue-700">
+        <Button onClick={() => setShowCreatePost(true)} style={{ background: 'linear-gradient(90deg, #459AFF 0%, #9F8BF9 100%)' }} className="hover:opacity-90 text-white">
           <Plus className="w-4 h-4 mr-2" />
           Create Post
         </Button>
@@ -138,8 +138,9 @@ export function PostSchedulerScreen() {
                 key={day}
                 onClick={() => setSelectedDate(day)}
                 className={`aspect-square flex items-center justify-center text-sm rounded-lg hover:bg-gray-100 ${
-                  day === selectedDate ? "bg-blue-600 text-white" : "text-gray-900"
+                  day === selectedDate ? "text-white" : "text-gray-900"
                 }`}
+                style={day === selectedDate ? { background: 'linear-gradient(90deg, #459AFF 0%, #9F8BF9 100%)' } : {}}
               >
                 {day}
               </button>
@@ -248,7 +249,7 @@ export function PostSchedulerScreen() {
             </div>
 
             <div className="flex space-x-3 pt-4">
-              <Button className="flex-1 bg-blue-600 hover:bg-blue-700">Schedule Post</Button>
+              <Button style={{ background: 'linear-gradient(90deg, #459AFF 0%, #9F8BF9 100%)' }} className="flex-1 hover:opacity-90 text-white">Schedule Post</Button>
               <Button variant="outline" className="flex-1 bg-transparent">
                 Save Draft
               </Button>

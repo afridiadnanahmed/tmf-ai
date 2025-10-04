@@ -80,7 +80,7 @@ export function Header({ user, setActiveTab, setIsLogoutOpen, onLoginClick, onSi
               <Button variant="ghost" className="text-gray-600 hover:text-gray-900" onClick={onLoginClick}>
                 Login
               </Button>
-              <Button className="bg-blue-600 hover:bg-blue-700 text-white" onClick={onSignupClick}>
+              <Button style={{ background: 'linear-gradient(90deg, #459AFF 0%, #9F8BF9 100%)' }} className="hover:opacity-90 text-white" onClick={onSignupClick}>
                 Sign Up
               </Button>
             </>

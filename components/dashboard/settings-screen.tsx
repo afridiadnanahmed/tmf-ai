@@ -7,18 +7,26 @@ import { Input } from "@/components/ui/input"
 import { Switch } from "@/components/ui/switch"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { ChevronRight, User, Bell, Palette, Lock, Upload, X } from "lucide-react"
+import { ChevronRight, User, Bell, Palette, Lock, Upload, X, Monitor } from "lucide-react"
 import { useAuth, getUserInitials } from "@/lib/auth-context"
+import { useTheme } from "next-themes"
 import { toast } from "sonner"
 
 export function SettingsScreen() {
   const { user, refreshUser } = useAuth()
+  const { theme, setTheme } = useTheme()
   const [loading, setLoading] = useState(false)
   const [passwordLoading, setPasswordLoading] = useState(false)
   const [imageLoading, setImageLoading] = useState(false)
   const [notificationsLoading, setNotificationsLoading] = useState(false)
   const [imagePreview, setImagePreview] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [mounted, setMounted] = useState(false)
+
+  // Ensure component is mounted before showing theme selector to prevent hydration mismatch
+  useEffect(() => {
+    setMounted(true)
+  }, [])
   
   const [notifications, setNotifications] = useState({
     emailAlerts: true,
@@ -284,23 +292,19 @@ export function SettingsScreen() {
         <TabsList className="grid w-full grid-cols-4 max-w-2xl">
           <TabsTrigger value="profile" className="flex items-center space-x-2">
             <User className="w-4 h-4" />
-            <span className="hidden sm:inline">Profile Information</span>
-            <span className="sm:hidden">Profile</span>
+            <span className="hidden sm:inline">Profile</span>
           </TabsTrigger>
           <TabsTrigger value="notifications" className="flex items-center space-x-2">
             <Bell className="w-4 h-4" />
-            <span className="hidden sm:inline">Notification Preferences</span>
-            <span className="sm:hidden">Notifications</span>
+            <span className="hidden sm:inline">Notifications</span>
           </TabsTrigger>
           <TabsTrigger value="themes" className="flex items-center space-x-2">
             <Palette className="w-4 h-4" />
             <span className="hidden sm:inline">Themes</span>
-            <span className="sm:hidden">Themes</span>
           </TabsTrigger>
           <TabsTrigger value="security" className="flex items-center space-x-2">
             <Lock className="w-4 h-4" />
             <span className="hidden sm:inline">Security</span>
-            <span className="sm:hidden">Security</span>
           </TabsTrigger>
         </TabsList>
 
@@ -440,8 +444,9 @@ export function SettingsScreen() {
                   >
                     Cancel
                   </Button>
-                  <Button 
-                    className="bg-blue-600 hover:bg-blue-700" 
+                  <Button
+                    style={{ background: 'linear-gradient(90deg, #459AFF 0%, #9F8BF9 100%)' }}
+                    className="hover:opacity-90 text-white"
                     onClick={handleProfileUpdate}
                     disabled={loading}
                   >
@@ -532,27 +537,72 @@ export function SettingsScreen() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="border-2 border-blue-500 rounded-lg p-4 cursor-pointer">
-                  <div className="text-center">
-                    <div className="w-full h-32 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg mb-3"></div>
-                    <h4 className="font-medium text-gray-900">Light Theme</h4>
-                    <p className="text-sm text-gray-500">Clean and bright interface</p>
-                  </div>
-                </div>
-                <div className="border-2 border-gray-200 rounded-lg p-4 cursor-pointer hover:border-gray-300">
-                  <div className="text-center">
-                    <div className="w-full h-32 bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg mb-3"></div>
-                    <h4 className="font-medium text-gray-900">Dark Theme</h4>
-                    <p className="text-sm text-gray-500">Easy on the eyes</p>
-                  </div>
-                </div>
-              </div>
+              {!mounted ? (
+                <div className="text-center text-gray-500">Loading theme options...</div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div
+                      className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                        theme === 'light' ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => {
+                        setTheme('light')
+                        toast.success('Light theme applied')
+                      }}
+                    >
+                      <div className="text-center">
+                        <div className="w-full h-32 bg-gradient-to-br from-blue-50 to-blue-100 rounded-lg mb-3"></div>
+                        <h4 className="font-medium text-gray-900">Light</h4>
+                        <p className="text-sm text-gray-500">Clean and bright</p>
+                      </div>
+                    </div>
 
-              <div className="flex justify-end space-x-3">
-                <Button variant="outline">Reset to Default</Button>
-                <Button className="bg-blue-600 hover:bg-blue-700">Apply Theme</Button>
-              </div>
+                    <div
+                      className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                        theme === 'dark' ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => {
+                        setTheme('dark')
+                        toast.success('Dark theme applied')
+                      }}
+                    >
+                      <div className="text-center">
+                        <div className="w-full h-32 bg-gradient-to-br from-gray-800 to-gray-900 rounded-lg mb-3"></div>
+                        <h4 className="font-medium text-gray-900">Dark</h4>
+                        <p className="text-sm text-gray-500">Easy on the eyes</p>
+                      </div>
+                    </div>
+
+                    <div
+                      className={`border-2 rounded-lg p-4 cursor-pointer transition-all ${
+                        theme === 'system' ? 'border-blue-500 ring-2 ring-blue-200' : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                      onClick={() => {
+                        setTheme('system')
+                        toast.success('System theme applied')
+                      }}
+                    >
+                      <div className="text-center">
+                        <div className="w-full h-32 bg-gradient-to-br from-gray-400 to-gray-600 rounded-lg mb-3 flex items-center justify-center">
+                          <Monitor className="w-12 h-12 text-white" />
+                        </div>
+                        <h4 className="font-medium text-gray-900">System</h4>
+                        <p className="text-sm text-gray-500">Auto-detect theme</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="pt-4 border-t">
+                    <p className="text-sm text-gray-600">
+                      Current theme: <span className="font-medium capitalize">{theme || 'system'}</span>
+                    </p>
+                    <p className="text-xs text-gray-500 mt-1">
+                      System theme automatically adjusts based on your device settings
+                    </p>
+                  </div>
+                </>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
