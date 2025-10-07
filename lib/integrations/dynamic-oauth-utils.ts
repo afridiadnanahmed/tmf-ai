@@ -221,14 +221,14 @@ export function getPlatformOAuthUrls(platform: string) {
       scopes: ['r_liteprofile', 'r_emailaddress', 'rw_organization_admin', 'r_ads', 'rw_ads'],
     },
     twitter: {
-      authorizationUrl: 'https://twitter.com/i/oauth2/authorize',
-      tokenUrl: 'https://api.twitter.com/2/oauth2/token',
-      scopes: ['tweet.read', 'users.read', 'offline.access'],
+      authorizationUrl: 'https://x.com/i/oauth2/authorize',
+      tokenUrl: 'https://api.x.com/2/oauth2/token',
+      scopes: ['tweet.read', 'users.read', 'follows.read', 'follows.write', 'offline.access'],
     },
     twitterAds: {
-      authorizationUrl: 'https://twitter.com/i/oauth2/authorize',
-      tokenUrl: 'https://api.twitter.com/2/oauth2/token',
-      scopes: ['tweet.read', 'users.read', 'offline.access'],
+      authorizationUrl: 'https://x.com/i/oauth2/authorize',
+      tokenUrl: 'https://api.x.com/2/oauth2/token',
+      scopes: ['tweet.read', 'users.read', 'follows.read', 'follows.write', 'offline.access'],
     },
     tiktok: {
       authorizationUrl: 'https://www.tiktok.com/v2/auth/authorize',
@@ -310,10 +310,11 @@ export async function generateAuthorizationUrl(
   // Generate PKCE parameters for platforms that require it
   let codeVerifier: string | undefined;
   let codeChallenge: string | undefined;
-  
+
   if (platform === 'twitter' || platform === 'twitterAds') {
     codeVerifier = generateCodeVerifier();
-    codeChallenge = generateCodeChallenge(codeVerifier);
+    // For X.com with 'plain' method, code_challenge = code_verifier
+    codeChallenge = codeVerifier;
   }
   
   // Generate state with OAuth app ID and code verifier
@@ -366,7 +367,7 @@ export async function generateAuthorizationUrl(
       }
       if (codeChallenge) {
         params.append('code_challenge', codeChallenge);
-        params.append('code_challenge_method', 'S256');
+        params.append('code_challenge_method', 'plain');
       }
       break;
     case 'linkedin':
@@ -464,7 +465,8 @@ export async function exchangeCodeForTokens(
     });
 
     // Add client secret if available (not all platforms require it)
-    if (clientSecret) {
+    // For Twitter/X, we use Basic Auth instead of body parameter
+    if (clientSecret && platform !== 'twitter' && platform !== 'twitterAds') {
       params.append('client_secret', clientSecret);
     }
 
@@ -542,13 +544,23 @@ export async function exchangeCodeForTokens(
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 30000);
 
+      // Prepare headers
+      const headers: Record<string, string> = {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      };
+
+      // For Twitter/X confidential clients, use Basic Auth
+      if ((platform === 'twitter' || platform === 'twitterAds') && clientSecret) {
+        const credentials = Buffer.from(`${app.clientId}:${clientSecret}`).toString('base64');
+        headers['Authorization'] = `Basic ${credentials}`;
+        console.log('[exchangeCodeForTokens] Using Basic Auth for X.com confidential client');
+      }
+
       let response;
       try {
         response = await fetch(platformUrls.tokenUrl, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded',
-          },
+          headers,
           body: params.toString(),
           signal: controller.signal,
         });
@@ -564,9 +576,7 @@ export async function exchangeCodeForTokens(
           try {
             response = await fetch(platformUrls.tokenUrl, {
               method: 'POST',
-              headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-              },
+              headers,
               body: params.toString(),
             });
           } catch (retryError) {
