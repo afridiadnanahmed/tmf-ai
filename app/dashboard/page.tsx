@@ -158,8 +158,8 @@ export default function DashboardPage() {
   const renderDashboardOverview = () => (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Dashboard Overview</h1>
-        <p className="text-gray-600">Welcome back! Here's your marketing performance at a glance.</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 mb-2">Dashboard Overview</h1>
+        <p className="text-gray-600 dark:text-gray-400">Welcome back! Here's your marketing performance at a glance.</p>
       </div>
 
       {/* Stats cards */}
@@ -623,7 +623,7 @@ export default function DashboardPage() {
 
       <div className="flex min-h-[calc(100vh-64px)]">
         {/* Sidebar */}
-        <aside className="w-64 bg-white border-r border-gray-200 hidden md:block">
+        <aside className="w-64 bg-white dark:bg-[#1f2937] border-r border-gray-200 dark:border-gray-700 hidden md:block">
           <nav className="p-6 space-y-2">
             {[
               { key: "dashboard", label: "Dashboard", icon: <BarChart3 className="w-5 h-5" /> },
@@ -638,7 +638,7 @@ export default function DashboardPage() {
                 key={item.key}
                 onClick={() => setActiveTab(item.key as Tab)}
                 className={`w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left ${
-                  activeTab === item.key ? "text-white" : "text-gray-700 hover:bg-gray-50"
+                  activeTab === item.key ? "text-white" : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                 }`}
                 style={activeTab === item.key ? { background: 'linear-gradient(90deg, #459AFF 0%, #9F8BF9 100%)' } : {}}
               >
@@ -650,7 +650,7 @@ export default function DashboardPage() {
             {/* Logout */}
             <button
               onClick={() => setIsLogoutOpen(true)}
-              className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left text-red-600 hover:bg-red-50 mt-8"
+              className="w-full flex items-center space-x-3 px-3 py-2 rounded-lg text-left text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 mt-8"
             >
               <LogOut className="w-5 h-5" />
               <span>Logout</span>
@@ -659,7 +659,7 @@ export default function DashboardPage() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 p-6 overflow-y-auto">
+        <main className="flex-1 p-6 overflow-y-auto bg-gray-50 dark:bg-[#111827]">
           {activeTab === "dashboard" && renderDashboardOverview()}
           {activeTab === "integrations" && <IntegrationsScreen message={oauthMessage} />}
           {activeTab === "crm" && <CRMScreen />}

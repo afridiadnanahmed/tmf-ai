@@ -60,7 +60,7 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white dark:bg-[#111827]">
       {/* Header */}
       <Header 
         user={user} 
@@ -72,17 +72,17 @@ export default function HomePage() {
       <section className="container mx-auto px-4 py-16 lg:py-24">
         <div className="grid lg:grid-cols-2 gap-12 items-center">
           <div className="space-y-6">
-            <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-sm font-medium">
+            <div className="inline-flex items-center px-3 py-1 rounded-full bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400 text-sm font-medium">
               ✨ AI-powered marketing platform
             </div>
-            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 leading-tight">
+            <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 dark:text-white leading-tight">
               AI-Driven
               <br />
               Marketing & CRM
               <br />
               Dashboard
             </h1>
-            <p className="text-lg text-gray-600 leading-relaxed">
+            <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
               Revolutionize your marketing strategy with advanced AI automation. Comprehensive CRM solutions that
               streamline your customer relationships and boost your business growth.
             </p>
@@ -97,11 +97,11 @@ export default function HomePage() {
 
           {/* Dashboard Mockup */}
           <div className="relative">
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 rounded-2xl p-8">
-              <div className="bg-white rounded-xl shadow-2xl p-6">
+            <div className="bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950 dark:to-purple-950 rounded-2xl p-8">
+              <div className="bg-white dark:bg-gray-800 rounded-xl shadow-2xl p-6">
                 {/* Dashboard Header */}
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-lg font-semibold text-gray-900">Analytics Dashboard</h3>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Analytics Dashboard</h3>
                   <div className="flex space-x-2">
                     <div className="w-3 h-3 bg-red-400 rounded-full"></div>
                     <div className="w-3 h-3 bg-yellow-400 rounded-full"></div>
@@ -111,27 +111,27 @@ export default function HomePage() {
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-3 gap-4 mb-6">
-                  <div className="bg-blue-50 rounded-lg p-3">
+                  <div className="bg-blue-50 dark:bg-blue-950 rounded-lg p-3">
                     <div className="flex items-center space-x-2">
-                      <TrendingUp className="w-4 h-4 text-blue-600" />
-                      <span className="text-xs text-gray-600">Revenue</span>
+                      <TrendingUp className="w-4 h-4 text-blue-600 dark:text-blue-400" />
+                      <span className="text-xs text-gray-600 dark:text-gray-300">Revenue</span>
                     </div>
-                    <div className="text-lg font-bold text-gray-900">$24.5K</div>
-                    <div className="text-xs text-green-600">+12.5%</div>
+                    <div className="text-lg font-bold text-gray-900 dark:text-white">$24.5K</div>
+                    <div className="text-xs text-green-600 dark:text-green-400">+12.5%</div>
                   </div>
-                  <div className="bg-green-50 rounded-lg p-3">
+                  <div className="bg-green-50 dark:bg-green-950 rounded-lg p-3">
                     <div className="flex items-center space-x-2">
-                      <Users className="w-4 h-4 text-green-600" />
-                      <span className="text-xs text-gray-600">Users</span>
+                      <Users className="w-4 h-4 text-green-600 dark:text-green-400" />
+                      <span className="text-xs text-gray-600 dark:text-gray-300">Users</span>
                     </div>
-                    <div className="text-lg font-bold text-gray-900">1,234</div>
-                    <div className="text-xs text-green-600">+8.2%</div>
+                    <div className="text-lg font-bold text-gray-900 dark:text-white">1,234</div>
+                    <div className="text-xs text-green-600 dark:text-green-400">+8.2%</div>
                   </div>
-                  <div className="bg-purple-50 rounded-lg p-3">
+                  <div className="bg-purple-50 dark:bg-purple-950 rounded-lg p-3">
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center space-x-2">
-                        <Activity className="w-4 h-4 text-purple-600" />
-                        <span className="text-xs text-gray-600">Conversion</span>
+                        <Activity className="w-4 h-4 text-purple-600 dark:text-purple-400" />
+                        <span className="text-xs text-gray-600 dark:text-gray-300">Conversion</span>
                       </div>
                       <Avatar className="h-6 w-6">
                         <AvatarImage src={mockUser.avatar || undefined} alt={mockUser.name} />
@@ -140,22 +140,22 @@ export default function HomePage() {
                         </AvatarFallback>
                       </Avatar>
                     </div>
-                    <div className="text-lg font-bold text-gray-900">3.2%</div>
-                    <div className="text-xs text-green-600">+0.5%</div>
+                    <div className="text-lg font-bold text-gray-900 dark:text-white">3.2%</div>
+                    <div className="text-xs text-green-600 dark:text-green-400">+0.5%</div>
                   </div>
                 </div>
 
                 {/* Chart Area */}
-                <div className="bg-gray-50 rounded-lg p-4 h-32 flex items-end justify-between">
+                <div className="bg-gray-50 dark:bg-gray-900 rounded-lg p-4 h-32 flex items-end justify-between">
                   <div className="flex items-end space-x-1 h-full">
                     {[40, 65, 45, 80, 55, 70, 85, 60, 75, 90, 65, 80].map((height, i) => (
-                      <div key={i} className="bg-blue-500 rounded-t w-3" style={{ height: `${height}%` }}></div>
+                      <div key={i} className="bg-blue-500 dark:bg-blue-400 rounded-t w-3" style={{ height: `${height}%` }}></div>
                     ))}
                   </div>
                 </div>
 
                 {/* Bottom Stats */}
-                <div className="flex justify-between mt-4 text-sm text-gray-600">
+                <div className="flex justify-between mt-4 text-sm text-gray-600 dark:text-gray-300">
                   <span>Jan</span>
                   <span>Feb</span>
                   <span>Mar</span>
@@ -170,89 +170,89 @@ export default function HomePage() {
       </section>
 
       {/* Powerful Features Section */}
-      <section className="bg-gray-50 py-16 lg:py-24">
+      <section className="bg-gray-50 dark:bg-gray-900 py-16 lg:py-24">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 mb-4">Powerful Features</h2>
-            <p className="text-lg text-gray-600">
+            <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white mb-4">Powerful Features</h2>
+            <p className="text-lg text-gray-600 dark:text-gray-300">
               Everything you need to dominate your marketing landscape with AI-powered precision
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Advanced Analytics */}
-            <Card className="p-6 hover:shadow-lg transition-shadow border-0 shadow-sm">
+            <Card className="p-6 hover:shadow-lg transition-shadow border-0 shadow-sm dark:bg-gray-800">
               <CardContent className="p-0">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <BarChart3 className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950 rounded-lg flex items-center justify-center mb-4">
+                  <BarChart3 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Advanced Analytics</h3>
-                <p className="text-gray-600">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Advanced Analytics</h3>
+                <p className="text-gray-600 dark:text-gray-300">
                   Get deep insights into your marketing performance with AI-powered predictive analytics.
                 </p>
               </CardContent>
             </Card>
 
             {/* Smart CRM */}
-            <Card className="p-6 hover:shadow-lg transition-shadow border-0 shadow-sm">
+            <Card className="p-6 hover:shadow-lg transition-shadow border-0 shadow-sm dark:bg-gray-800">
               <CardContent className="p-0">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950 rounded-lg flex items-center justify-center mb-4">
+                  <Users className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Smart CRM</h3>
-                <p className="text-gray-600">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Smart CRM</h3>
+                <p className="text-gray-600 dark:text-gray-300">
                   Manage customer relationships with AI-driven insights and automated workflows.
                 </p>
               </CardContent>
             </Card>
 
             {/* Post Scheduler */}
-            <Card className="p-6 hover:shadow-lg transition-shadow border-0 shadow-sm">
+            <Card className="p-6 hover:shadow-lg transition-shadow border-0 shadow-sm dark:bg-gray-800">
               <CardContent className="p-0">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <Calendar className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950 rounded-lg flex items-center justify-center mb-4">
+                  <Calendar className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Post Scheduler</h3>
-                <p className="text-gray-600">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Post Scheduler</h3>
+                <p className="text-gray-600 dark:text-gray-300">
                   Schedule and automate your social media posts across multiple platforms.
                 </p>
               </CardContent>
             </Card>
 
             {/* Unified View */}
-            <Card className="p-6 hover:shadow-lg transition-shadow border-0 shadow-sm">
+            <Card className="p-6 hover:shadow-lg transition-shadow border-0 shadow-sm dark:bg-gray-800">
               <CardContent className="p-0">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <Eye className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950 rounded-lg flex items-center justify-center mb-4">
+                  <Eye className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">Unified View</h3>
-                <p className="text-gray-600">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">Unified View</h3>
+                <p className="text-gray-600 dark:text-gray-300">
                   Get a complete overview of your marketing campaigns and customer interactions.
                 </p>
               </CardContent>
             </Card>
 
             {/* AI Automation */}
-            <Card className="p-6 hover:shadow-lg transition-shadow border-0 shadow-sm">
+            <Card className="p-6 hover:shadow-lg transition-shadow border-0 shadow-sm dark:bg-gray-800">
               <CardContent className="p-0">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <Bot className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950 rounded-lg flex items-center justify-center mb-4">
+                  <Bot className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">AI Automation</h3>
-                <p className="text-gray-600">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">AI Automation</h3>
+                <p className="text-gray-600 dark:text-gray-300">
                   Automate repetitive tasks and optimize your marketing workflows with AI.
                 </p>
               </CardContent>
             </Card>
 
             {/* AI Assistant */}
-            <Card className="p-6 hover:shadow-lg transition-shadow border-0 shadow-sm">
+            <Card className="p-6 hover:shadow-lg transition-shadow border-0 shadow-sm dark:bg-gray-800">
               <CardContent className="p-0">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mb-4">
-                  <MessageCircle className="w-6 h-6 text-blue-600" />
+                <div className="w-12 h-12 bg-blue-100 dark:bg-blue-950 rounded-lg flex items-center justify-center mb-4">
+                  <MessageCircle className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <h3 className="text-xl font-semibold text-gray-900 mb-2">AI Assistant</h3>
-                <p className="text-gray-600">
+                <h3 className="text-xl font-semibold text-gray-900 dark:text-white mb-2">AI Assistant</h3>
+                <p className="text-gray-600 dark:text-gray-300">
                   Get intelligent recommendations and insights from your personal AI marketing assistant.
                 </p>
               </CardContent>
@@ -266,13 +266,13 @@ export default function HomePage() {
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="space-y-6">
-              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900">Taking Results-Driven Digital Marketing</h2>
-              <p className="text-lg text-gray-600 leading-relaxed">
+              <h2 className="text-3xl lg:text-4xl font-bold text-gray-900 dark:text-white">Taking Results-Driven Digital Marketing</h2>
+              <p className="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
                 Our AI-driven platform helps businesses of all sizes achieve remarkable growth through intelligent
                 automation, data-driven insights, and personalized customer experiences. Transform your marketing
                 strategy and see measurable results that drive your business forward.
               </p>
-              <p className="text-gray-600">
+              <p className="text-gray-600 dark:text-gray-300">
                 Whether you're looking to increase conversions, improve customer retention, or streamline your marketing
                 operations, our comprehensive platform provides the tools and insights you need to succeed in today's
                 competitive digital landscape.
@@ -288,47 +288,47 @@ export default function HomePage() {
                     <div className="text-2xl font-bold mb-2">85%</div>
                     <div className="text-sm opacity-90">Increase in ROI</div>
                   </div>
-                  <div className="bg-white rounded-lg p-4 shadow-lg border">
-                    <div className="bg-gray-900 rounded-lg p-3 mb-3">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg border dark:border-gray-700">
+                    <div className="bg-gray-900 dark:bg-gray-950 rounded-lg p-3 mb-3">
                       <div className="flex items-center justify-between mb-2">
                         <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                         <Smartphone className="w-4 h-4 text-white" />
                       </div>
                       <div className="space-y-2">
-                        <div className="h-2 bg-gray-700 rounded w-3/4"></div>
-                        <div className="h-2 bg-gray-700 rounded w-1/2"></div>
+                        <div className="h-2 bg-gray-700 dark:bg-gray-600 rounded w-3/4"></div>
+                        <div className="h-2 bg-gray-700 dark:bg-gray-600 rounded w-1/2"></div>
                         <div className="h-2 bg-blue-500 rounded w-2/3"></div>
                       </div>
                     </div>
-                    <div className="text-xs text-gray-600">Mobile Dashboard</div>
+                    <div className="text-xs text-gray-600 dark:text-gray-300">Mobile Dashboard</div>
                   </div>
                 </div>
 
                 {/* Top Right */}
                 <div className="space-y-4 mt-8">
-                  <div className="bg-white rounded-lg p-4 shadow-lg border">
+                  <div className="bg-white dark:bg-gray-800 rounded-lg p-4 shadow-lg border dark:border-gray-700">
                     <div className="flex items-center justify-between mb-3">
-                      <div className="text-sm font-medium text-gray-900">Analytics</div>
-                      <Activity className="w-4 h-4 text-blue-600" />
+                      <div className="text-sm font-medium text-gray-900 dark:text-white">Analytics</div>
+                      <Activity className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                     </div>
                     <div className="space-y-2">
                       <div className="flex justify-between items-center">
-                        <div className="h-2 bg-blue-200 rounded-full flex-1 mr-2">
-                          <div className="h-2 bg-blue-600 rounded-full w-3/4"></div>
+                        <div className="h-2 bg-blue-200 dark:bg-blue-950 rounded-full flex-1 mr-2">
+                          <div className="h-2 bg-blue-600 dark:bg-blue-400 rounded-full w-3/4"></div>
                         </div>
-                        <span className="text-xs text-gray-600">75%</span>
+                        <span className="text-xs text-gray-600 dark:text-gray-300">75%</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <div className="h-2 bg-green-200 rounded-full flex-1 mr-2">
-                          <div className="h-2 bg-green-600 rounded-full w-1/2"></div>
+                        <div className="h-2 bg-green-200 dark:bg-green-950 rounded-full flex-1 mr-2">
+                          <div className="h-2 bg-green-600 dark:bg-green-400 rounded-full w-1/2"></div>
                         </div>
-                        <span className="text-xs text-gray-600">50%</span>
+                        <span className="text-xs text-gray-600 dark:text-gray-300">50%</span>
                       </div>
                       <div className="flex justify-between items-center">
-                        <div className="h-2 bg-purple-200 rounded-full flex-1 mr-2">
-                          <div className="h-2 bg-purple-600 rounded-full w-5/6"></div>
+                        <div className="h-2 bg-purple-200 dark:bg-purple-950 rounded-full flex-1 mr-2">
+                          <div className="h-2 bg-purple-600 dark:bg-purple-400 rounded-full w-5/6"></div>
                         </div>
-                        <span className="text-xs text-gray-600">85%</span>
+                        <span className="text-xs text-gray-600 dark:text-gray-300">85%</span>
                       </div>
                     </div>
                   </div>

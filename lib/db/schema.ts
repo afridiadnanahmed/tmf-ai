@@ -58,6 +58,7 @@ export const posts = pgTable('posts', {
   userId: uuid('user_id').references(() => users.id).notNull(),
   content: text('content').notNull(),
   platform: varchar('platform', { length: 50 }), // facebook, twitter, instagram, etc.
+  image: text('image'), // Post image URL
   scheduledAt: timestamp('scheduled_at'),
   publishedAt: timestamp('published_at'),
   status: varchar('status', { length: 20 }).default('draft'), // draft, scheduled, published, failed

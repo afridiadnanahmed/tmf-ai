@@ -96,16 +96,16 @@ const OAUTH_CONFIGS: Record<string, OAuthConfig> = {
   twitter: {
     clientId: '',
     clientSecret: '',
-    authorizationUrl: 'https://twitter.com/i/oauth2/authorize',
-    tokenUrl: 'https://api.twitter.com/2/oauth2/token',
-    scope: ['tweet.read', 'tweet.write', 'users.read', 'offline.access'],
+    authorizationUrl: 'https://x.com/i/oauth2/authorize',
+    tokenUrl: 'https://api.x.com/2/oauth2/token',
+    scope: ['tweet.read', 'tweet.write', 'users.read', 'media.write', 'offline.access'],
   },
   twitterAds: {
     clientId: '',
     clientSecret: '',
-    authorizationUrl: 'https://twitter.com/i/oauth2/authorize',
-    tokenUrl: 'https://api.twitter.com/2/oauth2/token',
-    scope: ['tweet.read', 'tweet.write', 'users.read', 'offline.access'],
+    authorizationUrl: 'https://x.com/i/oauth2/authorize',
+    tokenUrl: 'https://api.x.com/2/oauth2/token',
+    scope: ['tweet.read', 'tweet.write', 'users.read', 'media.write', 'offline.access'],
   },
   
   // TikTok

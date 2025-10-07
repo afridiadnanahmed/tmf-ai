@@ -28,7 +28,7 @@ interface HeaderProps {
 
 export function Header({ user, setActiveTab, setIsLogoutOpen, onLoginClick, onSignupClick }: HeaderProps) {
   return (
-    <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
+    <header className="bg-white dark:bg-[#1f2937] border-b border-gray-200 dark:border-gray-700 sticky top-0 z-40">
       <div className="px-6 py-4 flex items-center justify-between">
         <Link href="/" className="flex items-center space-x-2">
           <Image src="/logo.png" alt="The Meta Future" width={120} height={40} priority />

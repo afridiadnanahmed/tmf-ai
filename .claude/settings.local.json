@@ -14,7 +14,9 @@
       "Bash(pkill:*)",
       "Bash(npm install:*)",
       "Read(//tmp/**)",
-      "Bash(timeout:*)"
+      "Bash(timeout:*)",
+      "Bash(PGPASSWORD=root psql -h localhost -U adnan -d tmfai -c \"ALTER TABLE posts ADD COLUMN IF NOT EXISTS image TEXT;\")",
+      "Bash(PGPASSWORD=root psql -h localhost -U adnan -d tmfai -c \"SELECT platform, scopes, is_active FROM oauth_apps WHERE platform IN (''twitter'', ''twitterAds'');\")"
     ],
     "deny": [],
     "ask": []
