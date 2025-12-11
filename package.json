@@ -2,6 +2,9 @@
   "name": "my-v0-project",
   "version": "0.1.0",
   "private": true,
+  "engines": {
+    "node": ">=20.0.0"
+  },
   "scripts": {
     "build": "next build",
     "dev": "next dev",
@@ -10,7 +13,15 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "deploy": "npm run build && npm run deploy:upload && npm run deploy:install && npm run deploy:migrate && npm run deploy:restart",
+    "deploy:upload": "rsync -avz --exclude-from='.deployignore' -e 'ssh -i ~/.ssh/id_rsa_tmf_deploy -p 21098' ./ themzeni@192.64.117.125:/home/themzeni/ai.themetafuture.online/",
+    "deploy:install": "ssh -i ~/.ssh/id_rsa_tmf_deploy themzeni@192.64.117.125 -p 21098 'bash -lc \"source /home/themzeni/nodevenv/ai.themetafuture.online/20/bin/activate && cd /home/themzeni/ai.themetafuture.online && npm install --omit=dev\"'",
+    "deploy:migrate": "ssh -i ~/.ssh/id_rsa_tmf_deploy themzeni@192.64.117.125 -p 21098 'bash -lc \"source /home/themzeni/nodevenv/ai.themetafuture.online/20/bin/activate && cd /home/themzeni/ai.themetafuture.online && npm run db:push\"'",
+    "deploy:setup-db": "ssh -i ~/.ssh/id_rsa_tmf_deploy themzeni@192.64.117.125 -p 21098 'bash -lc \"cd /home/themzeni/ai.themetafuture.online && PGPASSWORD=tmfaiproduct psql -h localhost -U themzeni_ai -d themzeni_tmfai -f enable-pgcrypto.sql\"'",
+    "deploy:restart": "ssh -i ~/.ssh/id_rsa_tmf_deploy themzeni@192.64.117.125 -p 21098 'bash -lc \"cd /home/themzeni/ai.themetafuture.online && mkdir -p tmp && touch tmp/restart.txt && echo \\\"✓ cPanel Passenger restart triggered\\\"\"'",
+    "deploy:env": "scp -i ~/.ssh/id_rsa_tmf_deploy -P 21098 .env.production themzeni@192.64.117.125:/home/themzeni/ai.themetafuture.online/.env",
+    "deploy:status": "ssh -i ~/.ssh/id_rsa_tmf_deploy themzeni@192.64.117.125 -p 21098 'bash -lc \"ps aux | grep node | grep -v grep && echo \\\"\\\" && curl -I http://127.0.0.1:3000 2>&1 | head -5\"'"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -59,6 +70,7 @@
     "lucide-react": "^0.454.0",
     "next": "15.2.4",
     "next-themes": "latest",
+    "openai": "^6.10.0",
     "postgres": "^3.4.7",
     "react": "^19",
     "react-day-picker": "latest",

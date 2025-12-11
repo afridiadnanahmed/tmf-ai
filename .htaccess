@@ -1,0 +1,12 @@
+# Enable Passenger for Node.js
+PassengerEnabled on
+PassengerAppRoot /home/themzeni/ai.themetafuture.online
+PassengerAppType node
+PassengerStartupFile server.js
+PassengerNodejs /home/themzeni/nodevenv/ai.themetafuture.online/20/bin/node
+
+# Disable directory listing
+Options -Indexes
+
+# Set environment to production
+SetEnv NODE_ENV production

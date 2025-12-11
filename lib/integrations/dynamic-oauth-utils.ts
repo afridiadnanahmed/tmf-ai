@@ -280,9 +280,14 @@ export function getPlatformOAuthUrls(platform: string) {
       tokenUrl: 'https://api.amazon.com/auth/o2/token',
       scopes: ['advertising::campaign_management'],
     },
+    hubspot: {
+      authorizationUrl: 'https://app.hubspot.com/oauth/authorize',
+      tokenUrl: 'https://api.hubapi.com/oauth/v1/token',
+      scopes: ['crm.objects.contacts.read', 'crm.objects.contacts.write', 'crm.objects.companies.read', 'crm.objects.companies.write', 'crm.objects.leads.read', 'crm.objects.leads.write', 'crm.lists.read'],
+    },
     // Add more platforms as needed
   };
-  
+
   return urls[platform] || null;
 }
 
@@ -329,7 +334,10 @@ export async function generateAuthorizationUrl(
   });
   
   // Add scopes
-  const scopes = userConfig.scopes || platformUrls.scopes || [];
+  // If userConfig.scopes is an empty array or null, use platformUrls.scopes
+  const scopes = (userConfig.scopes && userConfig.scopes.length > 0)
+    ? userConfig.scopes
+    : (platformUrls.scopes || []);
 
   // Platform-specific parameters
   switch (platform) {
@@ -394,6 +402,12 @@ export async function generateAuthorizationUrl(
         params.append('scope', scopes.join(' '));
       }
       params.append('app_id', userConfig.clientId);
+      break;
+    case 'hubspot':
+      // HubSpot always requires scopes
+      if (scopes.length > 0) {
+        params.append('scope', scopes.join(' '));
+      }
       break;
     default:
       // For all other platforms, add scope if available

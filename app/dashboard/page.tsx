@@ -27,6 +27,7 @@ import { PostSchedulerScreen } from "@/components/dashboard/post-scheduler-scree
 import { MessagesScreen } from "@/components/dashboard/messages-screen"
 import { ReportsScreen } from "@/components/dashboard/reports-screen"
 import { SettingsScreen } from "@/components/dashboard/settings-screen"
+import { SupportChatWidget } from "@/components/support-chat-widget"
 
 type Tab = "dashboard" | "integrations" | "crm" | "scheduler" | "messages" | "reports" | "settings"
 
@@ -676,7 +677,7 @@ export default function DashboardPage() {
           <DialogHeader>
             <DialogTitle className="text-lg font-bold">Confirm Logout</DialogTitle>
           </DialogHeader>
-          <p className="text-gray-600 mb-6">Are you sure you want to log out? You’ll be returned to the home page.</p>
+          <p className="text-gray-600 mb-6">Are you sure you want to log out? You'll be returned to the home page.</p>
           <div className="flex justify-end space-x-3">
             <Button variant="outline" onClick={() => setIsLogoutOpen(false)}>
               Cancel
@@ -690,6 +691,9 @@ export default function DashboardPage() {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* AI Support Chat Widget */}
+      <SupportChatWidget />
     </>
   )
 }

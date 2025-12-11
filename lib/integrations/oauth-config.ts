@@ -227,6 +227,20 @@ const OAUTH_CONFIGS: Record<string, OAuthConfig> = {
     tokenUrl: 'https://login.microsoftonline.com/common/oauth2/v2.0/token',
     scope: ['https://graph.microsoft.com/.default'],
   },
+  pipedrive: {
+    clientId: '',
+    clientSecret: '',
+    authorizationUrl: 'https://oauth.pipedrive.com/oauth/authorize',
+    tokenUrl: 'https://oauth.pipedrive.com/oauth/token',
+    scope: ['deals:full', 'leads:full', 'contacts:full'],
+  },
+  freshsales: {
+    clientId: '',
+    clientSecret: '',
+    authorizationUrl: 'https://app.freshsales.io/oauth/authorize',
+    tokenUrl: 'https://app.freshsales.io/oauth/token',
+    scope: ['contact_data', 'deal_data', 'lead_data'],
+  },
   monday: {
     clientId: '',
     clientSecret: '',
@@ -400,6 +414,8 @@ export function getOAuthConfig(platform: string): OAuthConfig | null {
     'salesforce': 'SALESFORCE',
     'zohoCRM': 'ZOHOCRM',
     'dynamics365': 'DYNAMICS365',
+    'pipedrive': 'PIPEDRIVE',
+    'freshsales': 'FRESHSALES',
     'monday': 'MONDAY',
     // E-commerce
     'bigcommerce': 'BIGCOMMERCE',

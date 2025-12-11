@@ -32,9 +32,11 @@ interface Integration {
   }>
   status: 'connected' | 'disconnected'
   connectedAt?: string
+  configuredAt?: string
   expiresAt?: string
   needsRefresh?: boolean
   hasOAuthConfigured?: boolean
+  hasApiKeyConfigured?: boolean
 }
 
 interface OAuthCredentials {
@@ -68,6 +70,7 @@ export function IntegrationsScreen({ message }: IntegrationsScreenProps) {
   const [loading, setLoading] = useState(true)
   const [connecting, setConnecting] = useState<string | null>(null)
   const [savingOAuth, setSavingOAuth] = useState<string | null>(null)
+  const [activeTab, setActiveTab] = useState<string>('connected')
   const { toast } = useToast()
   const router = useRouter()
   const searchParams = useSearchParams()
@@ -186,15 +189,15 @@ export function IntegrationsScreen({ message }: IntegrationsScreenProps) {
     }
   }
 
-  // Handle API key connection
-  const handleApiKeyConnect = async () => {
+  // Handle API key configuration save (saves config without connecting)
+  const handleApiKeySaveConfig = async () => {
     if (!selectedPlatform) return
-    
+
     // Validate required fields
     const missingFields = selectedPlatform.apiKeyFields?.filter(
       field => field.required && !apiKeyValues[field.name]
     )
-    
+
     if (missingFields && missingFields.length > 0) {
       toast({
         title: "Missing required fields",
@@ -203,10 +206,10 @@ export function IntegrationsScreen({ message }: IntegrationsScreenProps) {
       })
       return
     }
-    
+
     setConnecting(selectedPlatform.id)
     try {
-      const response = await fetch('/api/integrations/api-key', {
+      const response = await fetch('/api/integrations/api-key-config', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -214,20 +217,62 @@ export function IntegrationsScreen({ message }: IntegrationsScreenProps) {
           credentials: apiKeyValues,
         }),
       })
-      
+
       if (response.ok) {
         toast({
-          title: "Connected successfully",
-          description: `${selectedPlatform.name} has been connected`,
+          title: "Configuration saved",
+          description: `${selectedPlatform.name} configuration saved. Click Connect to verify credentials.`,
         })
         setShowApiKeyDialog(false)
         setApiKeyValues({})
-        fetchIntegrations()
+        await fetchIntegrations()
+        setActiveTab('disconnected') // Switch to disconnected tab to show the saved config
+      } else {
+        const error = await response.json()
+        toast({
+          title: "Save failed",
+          description: error.error || "Failed to save configuration",
+          variant: "destructive",
+        })
+      }
+    } catch (error) {
+      console.error('API key config save error:', error)
+      toast({
+        title: "Save failed",
+        description: "An unexpected error occurred",
+        variant: "destructive",
+      })
+    } finally {
+      setConnecting(null)
+    }
+  }
+
+  // Handle API key connection (validates and activates)
+  const handleApiKeyConnect = async (platform: Integration) => {
+    setConnecting(platform.id)
+    try {
+      const response = await fetch('/api/integrations/api-key', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          platform: platform.id,
+          credentials: {}, // Will use stored credentials
+          activate: true,
+        }),
+      })
+
+      if (response.ok) {
+        toast({
+          title: "Connected successfully",
+          description: `${platform.name} has been connected`,
+        })
+        await fetchIntegrations()
+        setActiveTab('connected')
       } else {
         const error = await response.json()
         toast({
           title: "Connection failed",
-          description: error.error || "Failed to connect with API key",
+          description: error.error || "Failed to connect. Please check your credentials.",
           variant: "destructive",
         })
       }
@@ -323,9 +368,16 @@ export function IntegrationsScreen({ message }: IntegrationsScreenProps) {
       if (platform.hasOAuthConfigured) {
         handleOAuthConnect(platform)
       } else {
-        // Show OAuth configuration inline
+        // Show OAuth configuration inline and switch to appropriate tab
         setShowOAuthConfig(platform.id)
         setOAuthCredentials({ clientId: '', clientSecret: '', redirectUri: '', scopes: '' })
+        // If platform is disconnected (has config but not connected), go to disconnected tab
+        // Otherwise, go to available tab
+        if (platform.hasOAuthConfigured && platform.status === 'disconnected') {
+          setActiveTab('disconnected')
+        } else {
+          setActiveTab('available')
+        }
       }
     }
   }
@@ -364,10 +416,10 @@ export function IntegrationsScreen({ message }: IntegrationsScreenProps) {
 
   const connectedPlatforms = integrations.filter(p => p.status === 'connected')
   const configuredButDisconnected = integrations.filter(p =>
-    p.status === 'disconnected' && p.hasOAuthConfigured === true
+    p.status === 'disconnected' && (p.hasOAuthConfigured === true || p.hasApiKeyConfigured === true)
   )
   const availablePlatforms = integrations.filter(p =>
-    p.status === 'disconnected' && !p.hasOAuthConfigured
+    p.status === 'disconnected' && !p.hasOAuthConfigured && !p.hasApiKeyConfigured
   )
 
   // Helper function to group platforms by category
@@ -402,7 +454,7 @@ export function IntegrationsScreen({ message }: IntegrationsScreenProps) {
         </Button>
       </div>
 
-      <Tabs defaultValue="connected" className="w-full">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
         <TabsList className="grid w-full grid-cols-3 max-w-2xl">
           <TabsTrigger value="connected">
             Connected ({connectedPlatforms.length})
@@ -829,7 +881,7 @@ export function IntegrationsScreen({ message }: IntegrationsScreenProps) {
                           </Button>
                         )}
 
-                        {/* Reconnect button */}
+                        {/* Reconnect button for OAuth platforms */}
                         {platform.hasOAuthConfigured && (
                           <Button
                             size="sm"
@@ -850,6 +902,44 @@ export function IntegrationsScreen({ message }: IntegrationsScreenProps) {
                               </>
                             )}
                           </Button>
+                        )}
+
+                        {/* Connect button for API key platforms with saved config */}
+                        {platform.hasApiKeyConfigured && (
+                          <>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              className="flex-1"
+                              onClick={() => {
+                                setSelectedPlatform(platform)
+                                setApiKeyValues({})
+                                setShowApiKeyDialog(true)
+                              }}
+                            >
+                              <Settings className="w-3 h-3 mr-1" />
+                              Edit Config
+                            </Button>
+                            <Button
+                              size="sm"
+                              style={{ background: 'linear-gradient(90deg, #459AFF 0%, #9F8BF9 100%)' }}
+                              className="flex-1 hover:opacity-90 text-white"
+                              onClick={() => handleApiKeyConnect(platform)}
+                              disabled={connecting === platform.id}
+                            >
+                              {connecting === platform.id ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                  Connecting...
+                                </>
+                              ) : (
+                                <>
+                                  <RefreshCw className="w-4 h-4 mr-2" />
+                                  Connect
+                                </>
+                              )}
+                            </Button>
+                          </>
                         )}
 
                         {/* Configure OAuth button for platforms without config */}
@@ -1170,7 +1260,7 @@ export function IntegrationsScreen({ message }: IntegrationsScreenProps) {
               Cancel
             </Button>
             <Button
-              onClick={handleApiKeyConnect}
+              onClick={handleApiKeySaveConfig}
               disabled={connecting === selectedPlatform?.id}
               style={{ background: 'linear-gradient(90deg, #459AFF 0%, #9F8BF9 100%)' }}
               className="hover:opacity-90 text-white"
@@ -1178,10 +1268,10 @@ export function IntegrationsScreen({ message }: IntegrationsScreenProps) {
               {connecting === selectedPlatform?.id ? (
                 <>
                   <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Connecting...
+                  Saving...
                 </>
               ) : (
-                'Connect'
+                'Save Configuration'
               )}
             </Button>
           </DialogFooter>

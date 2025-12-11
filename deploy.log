@@ -1,0 +1,579 @@
+
+> my-v0-project@0.1.0 deploy
+> npm run build && npm run deploy:upload && npm run deploy:install && npm run deploy:migrate && npm run deploy:restart
+
+
+> my-v0-project@0.1.0 build
+> next build
+
+   ▲ Next.js 15.2.4
+   - Environments: .env.local, .env.production
+
+   Creating an optimized production build ...
+ ✓ Compiled successfully
+   Skipping validation of types
+   Skipping linting
+   Collecting page data ...
+   Generating static pages (0/41) ...
+   Generating static pages (10/41) 
+   Generating static pages (20/41) 
+   Generating static pages (30/41) 
+ ✓ Generating static pages (41/41)
+   Finalizing page optimization ...
+   Collecting build traces ...
+
+Route (app)                                 Size  First Load JS
+┌ ○ /                                    5.36 kB         157 kB
+├ ○ /_not-found                            990 B         102 kB
+├ ƒ /api/auth/login                        234 B         101 kB
+├ ƒ /api/auth/logout                       234 B         101 kB
+├ ƒ /api/auth/me                           234 B         101 kB
+├ ƒ /api/auth/register                     234 B         101 kB
+├ ƒ /api/campaigns                         234 B         101 kB
+├ ƒ /api/comments                          234 B         101 kB
+├ ƒ /api/comments/platform                 234 B         101 kB
+├ ƒ /api/comments/reply                    234 B         101 kB
+├ ƒ /api/contacts                          234 B         101 kB
+├ ƒ /api/crm/import                        234 B         101 kB
+├ ƒ /api/crm/leads                         234 B         101 kB
+├ ƒ /api/cron/publish-posts                234 B         101 kB
+├ ƒ /api/integrations                      234 B         101 kB
+├ ƒ /api/integrations/api-key              234 B         101 kB
+├ ƒ /api/integrations/callback             234 B         101 kB
+├ ƒ /api/integrations/config               234 B         101 kB
+├ ƒ /api/integrations/connect              234 B         101 kB
+├ ƒ /api/integrations/disconnect           234 B         101 kB
+├ ƒ /api/integrations/status               234 B         101 kB
+├ ƒ /api/messages                          234 B         101 kB
+├ ƒ /api/messages/[conversationId]         234 B         101 kB
+├ ƒ /api/messages/conversations            234 B         101 kB
+├ ƒ /api/messages/mark-read                234 B         101 kB
+├ ƒ /api/messages/platform                 234 B         101 kB
+├ ƒ /api/messages/send                     234 B         101 kB
+├ ƒ /api/messages/unread                   234 B         101 kB
+├ ƒ /api/posts                             234 B         101 kB
+├ ƒ /api/settings/oauth                    234 B         101 kB
+├ ƒ /api/settings/oauth-apps               234 B         101 kB
+├ ƒ /api/settings/oauth-apps/[id]          234 B         101 kB
+├ ƒ /api/user/change-password              234 B         101 kB
+├ ƒ /api/user/profile                      234 B         101 kB
+├ ƒ /api/user/settings                     234 B         101 kB
+├ ƒ /api/user/upload-image                 234 B         101 kB
+├ ○ /contact                               194 B         109 kB
+├ ○ /dashboard                            139 kB         299 kB
+├ ○ /privacy-policy                        194 B         109 kB
+├ ○ /settings/integrations               7.37 kB         137 kB
+└ ○ /terms-and-conditions                  194 B         109 kB
++ First Load JS shared by all             101 kB
+  ├ chunks/1684-9585fc2fd1a9680e.js      45.8 kB
+  ├ chunks/4bd1b696-6a4f9e5980969a9e.js  53.3 kB
+  └ other shared chunks (total)          1.93 kB
+
+
+○  (Static)   prerendered as static content
+ƒ  (Dynamic)  server-rendered on demand
+
+
+> my-v0-project@0.1.0 deploy:upload
+> rsync -avz --exclude-from='.deployignore' -e 'ssh -i ~/.ssh/id_rsa_tmf_deploy -p 21098' ./ themzeni@192.64.117.125:/home/themzeni/ai.themetafuture.online/
+
+sending incremental file list
+./
+.claude/
+.claude/settings.local.json
+.next/
+.next/BUILD_ID
+.next/app-build-manifest.json
+.next/app-path-routes-manifest.json
+.next/build-manifest.json
+.next/export-marker.json
+.next/images-manifest.json
+.next/next-minimal-server.js.nft.json
+.next/next-server.js.nft.json
+.next/package.json
+.next/prerender-manifest.json
+.next/react-loadable-manifest.json
+.next/required-server-files.json
+.next/routes-manifest.json
+.next/trace
+.next/diagnostics/
+.next/diagnostics/build-diagnostics.json
+.next/diagnostics/framework.json
+.next/server/
+.next/server/app-paths-manifest.json
+.next/server/functions-config-manifest.json
+.next/server/interception-route-rewrite-manifest.js
+.next/server/middleware-build-manifest.js
+.next/server/middleware-manifest.json
+.next/server/middleware-react-loadable-manifest.js
+.next/server/next-font-manifest.js
+.next/server/next-font-manifest.json
+.next/server/pages-manifest.json
+.next/server/server-reference-manifest.js
+.next/server/server-reference-manifest.json
+.next/server/webpack-runtime.js
+.next/server/app/
+.next/server/app/_not-found.html
+.next/server/app/_not-found.meta
+.next/server/app/_not-found.rsc
+.next/server/app/contact.html
+.next/server/app/contact.meta
+.next/server/app/contact.rsc
+.next/server/app/dashboard.html
+.next/server/app/dashboard.meta
+.next/server/app/dashboard.rsc
+.next/server/app/index.html
+.next/server/app/index.meta
+.next/server/app/index.rsc
+.next/server/app/page.js
+.next/server/app/page.js.nft.json
+.next/server/app/page_client-reference-manifest.js
+.next/server/app/privacy-policy.html
+.next/server/app/privacy-policy.meta
+.next/server/app/privacy-policy.rsc
+.next/server/app/terms-and-conditions.html
+.next/server/app/terms-and-conditions.meta
+.next/server/app/terms-and-conditions.rsc
+.next/server/app/_not-found/
+.next/server/app/_not-found/page.js
+.next/server/app/_not-found/page.js.nft.json
+.next/server/app/_not-found/page_client-reference-manifest.js
+.next/server/app/api/
+.next/server/app/api/auth/
+.next/server/app/api/auth/login/
+.next/server/app/api/auth/login/route.js
+.next/server/app/api/auth/login/route.js.nft.json
+.next/server/app/api/auth/login/route_client-reference-manifest.js
+.next/server/app/api/auth/logout/
+.next/server/app/api/auth/logout/route.js
+.next/server/app/api/auth/logout/route.js.nft.json
+.next/server/app/api/auth/logout/route_client-reference-manifest.js
+.next/server/app/api/auth/me/
+.next/server/app/api/auth/me/route.js
+.next/server/app/api/auth/me/route.js.nft.json
+.next/server/app/api/auth/me/route_client-reference-manifest.js
+.next/server/app/api/auth/register/
+.next/server/app/api/auth/register/route.js
+.next/server/app/api/auth/register/route.js.nft.json
+.next/server/app/api/auth/register/route_client-reference-manifest.js
+.next/server/app/api/campaigns/
+.next/server/app/api/campaigns/route.js
+.next/server/app/api/campaigns/route.js.nft.json
+.next/server/app/api/campaigns/route_client-reference-manifest.js
+.next/server/app/api/comments/
+.next/server/app/api/comments/route.js
+.next/server/app/api/comments/route.js.nft.json
+.next/server/app/api/comments/route_client-reference-manifest.js
+.next/server/app/api/comments/platform/
+.next/server/app/api/comments/platform/route.js
+.next/server/app/api/comments/platform/route.js.nft.json
+.next/server/app/api/comments/platform/route_client-reference-manifest.js
+.next/server/app/api/comments/reply/
+.next/server/app/api/comments/reply/route.js
+.next/server/app/api/comments/reply/route.js.nft.json
+.next/server/app/api/comments/reply/route_client-reference-manifest.js
+.next/server/app/api/contacts/
+.next/server/app/api/contacts/route.js
+.next/server/app/api/contacts/route.js.nft.json
+.next/server/app/api/contacts/route_client-reference-manifest.js
+.next/server/app/api/crm/
+.next/server/app/api/crm/import/
+.next/server/app/api/crm/import/route.js
+.next/server/app/api/crm/import/route.js.nft.json
+.next/server/app/api/crm/import/route_client-reference-manifest.js
+.next/server/app/api/crm/leads/
+.next/server/app/api/crm/leads/route.js
+.next/server/app/api/crm/leads/route.js.nft.json
+.next/server/app/api/crm/leads/route_client-reference-manifest.js
+.next/server/app/api/cron/
+.next/server/app/api/cron/publish-posts/
+.next/server/app/api/cron/publish-posts/route.js
+.next/server/app/api/cron/publish-posts/route.js.nft.json
+.next/server/app/api/cron/publish-posts/route_client-reference-manifest.js
+.next/server/app/api/integrations/
+.next/server/app/api/integrations/route.js
+.next/server/app/api/integrations/route.js.nft.json
+.next/server/app/api/integrations/route_client-reference-manifest.js
+.next/server/app/api/integrations/api-key/
+.next/server/app/api/integrations/api-key/route.js
+.next/server/app/api/integrations/api-key/route.js.nft.json
+.next/server/app/api/integrations/api-key/route_client-reference-manifest.js
+.next/server/app/api/integrations/callback/
+.next/server/app/api/integrations/callback/route.js
+.next/server/app/api/integrations/callback/route.js.nft.json
+.next/server/app/api/integrations/callback/route_client-reference-manifest.js
+.next/server/app/api/integrations/config/
+.next/server/app/api/integrations/config/route.js
+.next/server/app/api/integrations/config/route.js.nft.json
+.next/server/app/api/integrations/config/route_client-reference-manifest.js
+.next/server/app/api/integrations/connect/
+.next/server/app/api/integrations/connect/route.js
+.next/server/app/api/integrations/connect/route.js.nft.json
+.next/server/app/api/integrations/connect/route_client-reference-manifest.js
+.next/server/app/api/integrations/disconnect/
+.next/server/app/api/integrations/disconnect/route.js
+.next/server/app/api/integrations/disconnect/route.js.nft.json
+.next/server/app/api/integrations/disconnect/route_client-reference-manifest.js
+.next/server/app/api/integrations/status/
+.next/server/app/api/integrations/status/route.js
+.next/server/app/api/integrations/status/route.js.nft.json
+.next/server/app/api/integrations/status/route_client-reference-manifest.js
+.next/server/app/api/messages/
+.next/server/app/api/messages/route.js
+.next/server/app/api/messages/route.js.nft.json
+.next/server/app/api/messages/route_client-reference-manifest.js
+.next/server/app/api/messages/[conversationId]/
+.next/server/app/api/messages/[conversationId]/route.js
+.next/server/app/api/messages/[conversationId]/route.js.nft.json
+.next/server/app/api/messages/[conversationId]/route_client-reference-manifest.js
+.next/server/app/api/messages/conversations/
+.next/server/app/api/messages/conversations/route.js
+.next/server/app/api/messages/conversations/route.js.nft.json
+.next/server/app/api/messages/conversations/route_client-reference-manifest.js
+.next/server/app/api/messages/mark-read/
+.next/server/app/api/messages/mark-read/route.js
+.next/server/app/api/messages/mark-read/route.js.nft.json
+.next/server/app/api/messages/mark-read/route_client-reference-manifest.js
+.next/server/app/api/messages/platform/
+.next/server/app/api/messages/platform/route.js
+.next/server/app/api/messages/platform/route.js.nft.json
+.next/server/app/api/messages/platform/route_client-reference-manifest.js
+.next/server/app/api/messages/send/
+.next/server/app/api/messages/send/route.js
+.next/server/app/api/messages/send/route.js.nft.json
+.next/server/app/api/messages/send/route_client-reference-manifest.js
+.next/server/app/api/messages/unread/
+.next/server/app/api/messages/unread/route.js
+.next/server/app/api/messages/unread/route.js.nft.json
+.next/server/app/api/messages/unread/route_client-reference-manifest.js
+.next/server/app/api/posts/
+.next/server/app/api/posts/route.js
+.next/server/app/api/posts/route.js.nft.json
+.next/server/app/api/posts/route_client-reference-manifest.js
+.next/server/app/api/settings/
+.next/server/app/api/settings/oauth-apps/
+.next/server/app/api/settings/oauth-apps/route.js
+.next/server/app/api/settings/oauth-apps/route.js.nft.json
+.next/server/app/api/settings/oauth-apps/route_client-reference-manifest.js
+.next/server/app/api/settings/oauth-apps/[id]/
+.next/server/app/api/settings/oauth-apps/[id]/route.js
+.next/server/app/api/settings/oauth-apps/[id]/route.js.nft.json
+.next/server/app/api/settings/oauth-apps/[id]/route_client-reference-manifest.js
+.next/server/app/api/settings/oauth/
+.next/server/app/api/settings/oauth/route.js
+.next/server/app/api/settings/oauth/route.js.nft.json
+.next/server/app/api/settings/oauth/route_client-reference-manifest.js
+.next/server/app/api/user/
+.next/server/app/api/user/change-password/
+.next/server/app/api/user/change-password/route.js
+.next/server/app/api/user/change-password/route.js.nft.json
+.next/server/app/api/user/change-password/route_client-reference-manifest.js
+.next/server/app/api/user/profile/
+.next/server/app/api/user/profile/route.js
+.next/server/app/api/user/profile/route.js.nft.json
+.next/server/app/api/user/profile/route_client-reference-manifest.js
+.next/server/app/api/user/settings/
+.next/server/app/api/user/settings/route.js
+.next/server/app/api/user/settings/route.js.nft.json
+.next/server/app/api/user/settings/route_client-reference-manifest.js
+.next/server/app/api/user/upload-image/
+.next/server/app/api/user/upload-image/route.js
+.next/server/app/api/user/upload-image/route.js.nft.json
+.next/server/app/api/user/upload-image/route_client-reference-manifest.js
+.next/server/app/contact/
+.next/server/app/contact/page.js
+.next/server/app/contact/page.js.nft.json
+.next/server/app/contact/page_client-reference-manifest.js
+.next/server/app/dashboard/
+.next/server/app/dashboard/page.js
+.next/server/app/dashboard/page.js.nft.json
+.next/server/app/dashboard/page_client-reference-manifest.js
+.next/server/app/privacy-policy/
+.next/server/app/privacy-policy/page.js
+.next/server/app/privacy-policy/page.js.nft.json
+.next/server/app/privacy-policy/page_client-reference-manifest.js
+.next/server/app/settings/
+.next/server/app/settings/integrations.html
+.next/server/app/settings/integrations.meta
+.next/server/app/settings/integrations.rsc
+.next/server/app/settings/integrations/
+.next/server/app/settings/integrations/page.js
+.next/server/app/settings/integrations/page.js.nft.json
+.next/server/app/settings/integrations/page_client-reference-manifest.js
+.next/server/app/terms-and-conditions/
+.next/server/app/terms-and-conditions/page.js
+.next/server/app/terms-and-conditions/page.js.nft.json
+.next/server/app/terms-and-conditions/page_client-reference-manifest.js
+.next/server/chunks/
+.next/server/chunks/1466.js
+.next/server/chunks/150.js
+.next/server/chunks/199.js
+.next/server/chunks/2091.js
+.next/server/chunks/3329.js
+.next/server/chunks/3824.js
+.next/server/chunks/4053.js
+.next/server/chunks/4447.js
+.next/server/chunks/4999.js
+.next/server/chunks/5663.js
+.next/server/chunks/580.js
+.next/server/chunks/7994.js
+.next/server/chunks/844.js
+.next/server/chunks/8548.js
+.next/server/pages/
+.next/server/pages/404.html
+.next/server/pages/500.html
+.next/server/pages/_app.js
+.next/server/pages/_app.js.nft.json
+.next/server/pages/_document.js
+.next/server/pages/_document.js.nft.json
+.next/server/pages/_error.js
+.next/server/pages/_error.js.nft.json
+.next/static/
+.next/static/-ailoA_8-AvB-xix8hhm8/
+.next/static/-ailoA_8-AvB-xix8hhm8/_buildManifest.js
+.next/static/-ailoA_8-AvB-xix8hhm8/_ssgManifest.js
+.next/static/chunks/
+.next/static/chunks/1684-9585fc2fd1a9680e.js
+.next/static/chunks/1997-68a91324dfdb46e4.js
+.next/static/chunks/4bd1b696-6a4f9e5980969a9e.js
+.next/static/chunks/5520-1e7e3c41ec643289.js
+.next/static/chunks/5992-c9860871041c1dcb.js
+.next/static/chunks/6671-a6a0b50c1418ea49.js
+.next/static/chunks/8049-5c382f5d52795425.js
+.next/static/chunks/9243-6ce5ddc1902619e4.js
+.next/static/chunks/framework-8157ebc349c37b34.js
+.next/static/chunks/main-app-5cc3277e9255d8c5.js
+.next/static/chunks/main-cb621573c7e1820c.js
+.next/static/chunks/polyfills-42372ed130431b0a.js
+.next/static/chunks/webpack-7c361d7b26af7cc4.js
+.next/static/chunks/app/
+.next/static/chunks/app/layout-a238ec1d4f4ddbbc.js
+.next/static/chunks/app/page-c07937f253eaa137.js
+.next/static/chunks/app/_not-found/
+.next/static/chunks/app/_not-found/page-fbe4be3b5e9d3cb1.js
+.next/static/chunks/app/api/
+.next/static/chunks/app/api/auth/
+.next/static/chunks/app/api/auth/login/
+.next/static/chunks/app/api/auth/login/route-600a053706e696b4.js
+.next/static/chunks/app/api/auth/logout/
+.next/static/chunks/app/api/auth/logout/route-4f39c0feeb1f7bd4.js
+.next/static/chunks/app/api/auth/me/
+.next/static/chunks/app/api/auth/me/route-8474f04aa881eaa2.js
+.next/static/chunks/app/api/auth/register/
+.next/static/chunks/app/api/auth/register/route-d9af6e9b74e328ae.js
+.next/static/chunks/app/api/campaigns/
+.next/static/chunks/app/api/campaigns/route-e9a0a6d2ba14d02a.js
+.next/static/chunks/app/api/comments/
+.next/static/chunks/app/api/comments/route-b9839a9b285b3db1.js
+.next/static/chunks/app/api/comments/platform/
+.next/static/chunks/app/api/comments/platform/route-7f1a188b30eebf89.js
+.next/static/chunks/app/api/comments/reply/
+.next/static/chunks/app/api/comments/reply/route-0d216f52d3bb2284.js
+.next/static/chunks/app/api/contacts/
+.next/static/chunks/app/api/contacts/route-02566ab8d2da9ac0.js
+.next/static/chunks/app/api/crm/
+.next/static/chunks/app/api/crm/import/
+.next/static/chunks/app/api/crm/import/route-3902e3daf3da563f.js
+.next/static/chunks/app/api/crm/leads/
+.next/static/chunks/app/api/crm/leads/route-5f8abff9ce2a9505.js
+.next/static/chunks/app/api/cron/
+.next/static/chunks/app/api/cron/publish-posts/
+.next/static/chunks/app/api/cron/publish-posts/route-8fe67ef4f5fac6d0.js
+.next/static/chunks/app/api/integrations/
+.next/static/chunks/app/api/integrations/route-e78c1b2539a74f7b.js
+.next/static/chunks/app/api/integrations/api-key/
+.next/static/chunks/app/api/integrations/api-key/route-b132ddd2ae9d6ba9.js
+.next/static/chunks/app/api/integrations/callback/
+.next/static/chunks/app/api/integrations/callback/route-eec1b7f8ece7abe2.js
+.next/static/chunks/app/api/integrations/config/
+.next/static/chunks/app/api/integrations/config/route-4e2065e3bfde6bab.js
+.next/static/chunks/app/api/integrations/connect/
+.next/static/chunks/app/api/integrations/connect/route-532341cf4129a185.js
+.next/static/chunks/app/api/integrations/disconnect/
+.next/static/chunks/app/api/integrations/disconnect/route-8d0afc3c1bc201c3.js
+.next/static/chunks/app/api/integrations/status/
+.next/static/chunks/app/api/integrations/status/route-986b5caedd92ad8b.js
+.next/static/chunks/app/api/messages/
+.next/static/chunks/app/api/messages/route-7bdcc45a78c2e94b.js
+.next/static/chunks/app/api/messages/[conversationId]/
+.next/static/chunks/app/api/messages/[conversationId]/route-ed229dd17342f912.js
+.next/static/chunks/app/api/messages/conversations/
+.next/static/chunks/app/api/messages/conversations/route-cef14c171269e2f9.js
+.next/static/chunks/app/api/messages/mark-read/
+.next/static/chunks/app/api/messages/mark-read/route-7dcf59aa4e6b3f73.js
+.next/static/chunks/app/api/messages/platform/
+.next/static/chunks/app/api/messages/platform/route-4f043e70e24c92dc.js
+.next/static/chunks/app/api/messages/send/
+.next/static/chunks/app/api/messages/send/route-eed9bf8a5cf9611e.js
+.next/static/chunks/app/api/messages/unread/
+.next/static/chunks/app/api/messages/unread/route-cc00c1c8decc2bf2.js
+.next/static/chunks/app/api/posts/
+.next/static/chunks/app/api/posts/route-0b3f4b80e4eacde1.js
+.next/static/chunks/app/api/settings/
+.next/static/chunks/app/api/settings/oauth-apps/
+.next/static/chunks/app/api/settings/oauth-apps/route-e968b4f7437a1aa4.js
+.next/static/chunks/app/api/settings/oauth-apps/[id]/
+.next/static/chunks/app/api/settings/oauth-apps/[id]/route-0ee9841be2c365b7.js
+.next/static/chunks/app/api/settings/oauth/
+.next/static/chunks/app/api/settings/oauth/route-66cea893f260ca5e.js
+.next/static/chunks/app/api/user/
+.next/static/chunks/app/api/user/change-password/
+.next/static/chunks/app/api/user/change-password/route-7789a3857a685d09.js
+.next/static/chunks/app/api/user/profile/
+.next/static/chunks/app/api/user/profile/route-f86c3d0d4f4a9f09.js
+.next/static/chunks/app/api/user/settings/
+.next/static/chunks/app/api/user/settings/route-de37e8016b469500.js
+.next/static/chunks/app/api/user/upload-image/
+.next/static/chunks/app/api/user/upload-image/route-2ad3d6aa1acd7bc1.js
+.next/static/chunks/app/contact/
+.next/static/chunks/app/contact/page-4851887412adc7db.js
+.next/static/chunks/app/dashboard/
+.next/static/chunks/app/dashboard/loading-8fe18913ecfd244d.js
+.next/static/chunks/app/dashboard/page-b8a1f7edc61011c6.js
+.next/static/chunks/app/privacy-policy/
+.next/static/chunks/app/privacy-policy/page-af320914ae5bf8f0.js
+.next/static/chunks/app/settings/
+.next/static/chunks/app/settings/integrations/
+.next/static/chunks/app/settings/integrations/page-36b8604b41416c41.js
+.next/static/chunks/app/terms-and-conditions/
+.next/static/chunks/app/terms-and-conditions/page-8802568b3301b7c1.js
+.next/static/chunks/pages/
+.next/static/chunks/pages/_app-5d1abe03d322390c.js
+.next/static/chunks/pages/_error-3b2a1d523de49635.js
+.next/static/css/
+.next/static/css/351c98f426ca6070.css
+.next/types/
+.next/types/cache-life.d.ts
+.next/types/package.json
+.next/types/app/
+.next/types/app/layout.ts
+.next/types/app/page.ts
+.next/types/app/api/
+.next/types/app/api/auth/
+.next/types/app/api/auth/login/
+.next/types/app/api/auth/login/route.ts
+.next/types/app/api/auth/logout/
+.next/types/app/api/auth/logout/route.ts
+.next/types/app/api/auth/me/
+.next/types/app/api/auth/me/route.ts
+.next/types/app/api/auth/register/
+.next/types/app/api/auth/register/route.ts
+.next/types/app/api/campaigns/
+.next/types/app/api/campaigns/route.ts
+.next/types/app/api/comments/
+.next/types/app/api/comments/route.ts
+.next/types/app/api/comments/platform/
+.next/types/app/api/comments/platform/route.ts
+.next/types/app/api/comments/reply/
+.next/types/app/api/comments/reply/route.ts
+.next/types/app/api/contacts/
+.next/types/app/api/contacts/route.ts
+.next/types/app/api/crm/
+.next/types/app/api/crm/import/
+.next/types/app/api/crm/import/route.ts
+.next/types/app/api/crm/leads/
+.next/types/app/api/crm/leads/route.ts
+.next/types/app/api/cron/
+.next/types/app/api/cron/publish-posts/
+.next/types/app/api/cron/publish-posts/route.ts
+.next/types/app/api/integrations/
+.next/types/app/api/integrations/route.ts
+.next/types/app/api/integrations/api-key/
+.next/types/app/api/integrations/api-key/route.ts
+.next/types/app/api/integrations/callback/
+.next/types/app/api/integrations/callback/route.ts
+.next/types/app/api/integrations/config/
+.next/types/app/api/integrations/config/route.ts
+.next/types/app/api/integrations/connect/
+.next/types/app/api/integrations/connect/route.ts
+.next/types/app/api/integrations/disconnect/
+.next/types/app/api/integrations/disconnect/route.ts
+.next/types/app/api/integrations/status/
+.next/types/app/api/integrations/status/route.ts
+.next/types/app/api/messages/
+.next/types/app/api/messages/route.ts
+.next/types/app/api/messages/[conversationId]/
+.next/types/app/api/messages/[conversationId]/route.ts
+.next/types/app/api/messages/conversations/
+.next/types/app/api/messages/conversations/route.ts
+.next/types/app/api/messages/mark-read/
+.next/types/app/api/messages/mark-read/route.ts
+.next/types/app/api/messages/platform/
+.next/types/app/api/messages/platform/route.ts
+.next/types/app/api/messages/send/
+.next/types/app/api/messages/send/route.ts
+.next/types/app/api/messages/unread/
+.next/types/app/api/messages/unread/route.ts
+.next/types/app/api/posts/
+.next/types/app/api/posts/route.ts
+.next/types/app/api/settings/
+.next/types/app/api/settings/oauth-apps/
+.next/types/app/api/settings/oauth-apps/route.ts
+.next/types/app/api/settings/oauth-apps/[id]/
+.next/types/app/api/settings/oauth-apps/[id]/route.ts
+.next/types/app/api/settings/oauth/
+.next/types/app/api/settings/oauth/route.ts
+.next/types/app/api/user/
+.next/types/app/api/user/change-password/
+.next/types/app/api/user/change-password/route.ts
+.next/types/app/api/user/profile/
+.next/types/app/api/user/profile/route.ts
+.next/types/app/api/user/settings/
+.next/types/app/api/user/settings/route.ts
+.next/types/app/api/user/upload-image/
+.next/types/app/api/user/upload-image/route.ts
+.next/types/app/contact/
+.next/types/app/contact/page.ts
+.next/types/app/dashboard/
+.next/types/app/dashboard/page.ts
+.next/types/app/privacy-policy/
+.next/types/app/privacy-policy/page.ts
+.next/types/app/settings/
+.next/types/app/settings/integrations/
+.next/types/app/settings/integrations/page.ts
+.next/types/app/terms-and-conditions/
+.next/types/app/terms-and-conditions/page.ts
+
+sent 75,101 bytes  received 46,251 bytes  16,180.27 bytes/sec
+total size is 5,619,293  speedup is 46.31
+
+> my-v0-project@0.1.0 deploy:install
+> ssh -i ~/.ssh/id_rsa_tmf_deploy themzeni@192.64.117.125 -p 21098 'bash -lc "source /home/themzeni/nodevenv/ai.themetafuture.online/20/bin/activate && cd /home/themzeni/ai.themetafuture.online && npm install --omit=dev"'
+
+
+up to date, audited 342 packages in 5s
+
+55 packages are looking for funding
+  run `npm fund` for details
+
+5 moderate severity vulnerabilities
+
+To address all issues (including breaking changes), run:
+  npm audit fix --force
+
+Run `npm audit` for details.
+
+> my-v0-project@0.1.0 deploy:migrate
+> ssh -i ~/.ssh/id_rsa_tmf_deploy themzeni@192.64.117.125 -p 21098 'bash -lc "source /home/themzeni/nodevenv/ai.themetafuture.online/20/bin/activate && cd /home/themzeni/ai.themetafuture.online && npm run db:push"'
+
+
+> my-v0-project@0.1.0 db:push
+> drizzle-kit push
+
+No config path provided, using default 'drizzle.config.ts'
+Reading config file '/home/themzeni/ai.themetafuture.online/drizzle.config.ts'
+[dotenv@17.2.3] injecting env (0) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
+Using 'postgres' driver for database querying
+[⣷] Pulling schema from database...
+[2K[1G[⣯] Pulling schema from database...
+[2K[1G[⣟] Pulling schema from database...
+[2K[1G[⡿] Pulling schema from database...
+[2K[1G[⢿] Pulling schema from database...
+[2K[1G[⣻] Pulling schema from database...
+[2K[1G[✓] Pulling schema from database...
+[✓] Changes applied
+
+> my-v0-project@0.1.0 deploy:restart
+> ssh -i ~/.ssh/id_rsa_tmf_deploy themzeni@192.64.117.125 -p 21098 'bash -lc "cd /home/themzeni/ai.themetafuture.online && mkdir -p tmp && touch tmp/restart.txt && echo \"✓ cPanel Passenger restart triggered\""'
+
+✓ cPanel Passenger restart triggered

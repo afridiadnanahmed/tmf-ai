@@ -36,6 +36,12 @@ export async function GET() {
       const integration = userIntegrations.find(i => i.platform === platform.id);
       const hasOAuthApp = userOAuthApps.find(app => app.platform === platform.id);
 
+      // Check if API key platform has credentials configured (but not necessarily active)
+      const hasApiKeyConfigured = platform.requiresApiKey &&
+        integration &&
+        integration.accessToken &&
+        !integration.isActive;
+
       return {
         id: platform.id,
         name: platform.name,
@@ -48,8 +54,10 @@ export async function GET() {
         requiresApiKey: platform.requiresApiKey,
         apiKeyFields: platform.apiKeyFields,
         hasOAuthConfigured: !!hasOAuthApp, // Indicates if user has configured OAuth app
+        hasApiKeyConfigured: !!hasApiKeyConfigured, // Indicates if API key platform has credentials saved
         status: integration?.isActive ? 'connected' : 'disconnected',
         connectedAt: integration?.metadata ? (integration.metadata as any).connectedAt : null,
+        configuredAt: integration?.metadata ? (integration.metadata as any).configuredAt : null,
         expiresAt: integration?.expiresAt,
         needsRefresh: integration?.expiresAt ? new Date(integration.expiresAt) < new Date() : false,
       };

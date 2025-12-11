@@ -1,9 +1,9 @@
-import { pgTable, serial, text, varchar, timestamp, boolean, integer, uuid, jsonb, numeric } from 'drizzle-orm/pg-core';
+import { pgTable, serial, text, varchar, timestamp, boolean, integer, jsonb, numeric } from 'drizzle-orm/pg-core';
 import { relations } from 'drizzle-orm';
 
 // Users table
 export const users = pgTable('users', {
-  id: uuid('id').defaultRandom().primaryKey(),
+  id: serial('id').primaryKey(),
   email: varchar('email', { length: 255 }).notNull().unique(),
   name: varchar('name', { length: 255 }),
   password: varchar('password', { length: 255 }).notNull(),
@@ -15,8 +15,8 @@ export const users = pgTable('users', {
 
 // User Settings table
 export const userSettings = pgTable('user_settings', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull().unique(),
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull().unique(),
   // All settings stored as JSON for flexibility
   settings: jsonb('settings').default({
     notifications: {
@@ -34,7 +34,7 @@ export const userSettings = pgTable('user_settings', {
 
 // Roles table
 export const roles = pgTable('roles', {
-  id: uuid('id').defaultRandom().primaryKey(),
+  id: serial('id').primaryKey(),
   name: varchar('name', { length: 100 }).notNull().unique(),
   description: text('description'),
   permissions: jsonb('permissions'), // Store role permissions as JSON
@@ -45,17 +45,17 @@ export const roles = pgTable('roles', {
 
 // User-Roles junction table (many-to-many relationship)
 export const userRoles = pgTable('user_roles', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
-  roleId: uuid('role_id').references(() => roles.id, { onDelete: 'cascade' }).notNull(),
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  roleId: integer('role_id').references(() => roles.id, { onDelete: 'cascade' }).notNull(),
   assignedAt: timestamp('assigned_at').defaultNow().notNull(),
-  assignedBy: uuid('assigned_by').references(() => users.id),
+  assignedBy: integer('assigned_by').references(() => users.id),
 });
 
 // Posts table (example for social media management)
 export const posts = pgTable('posts', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id').references(() => users.id).notNull(),
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
   content: text('content').notNull(),
   platform: varchar('platform', { length: 50 }), // facebook, twitter, instagram, etc.
   image: text('image'), // Post image URL
@@ -69,9 +69,9 @@ export const posts = pgTable('posts', {
 
 // Messages table (for CRM)
 export const messages = pgTable('messages', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id').references(() => users.id).notNull(),
-  contactId: uuid('contact_id').references(() => contacts.id),
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  contactId: integer('contact_id').references(() => contacts.id),
   subject: varchar('subject', { length: 255 }),
   content: text('content').notNull(),
   type: varchar('type', { length: 20 }), // email, sms, chat
@@ -83,8 +83,8 @@ export const messages = pgTable('messages', {
 
 // Contacts table (for CRM)
 export const contacts = pgTable('contacts', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id').references(() => users.id).notNull(),
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
   email: varchar('email', { length: 255 }),
   phone: varchar('phone', { length: 50 }),
   firstName: varchar('first_name', { length: 100 }),
@@ -98,8 +98,8 @@ export const contacts = pgTable('contacts', {
 
 // OAuth Applications table - stores OAuth app credentials per user
 export const oauthApps = pgTable('oauth_apps', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id, { onDelete: 'cascade' }).notNull(),
   platform: varchar('platform', { length: 50 }).notNull(), // facebook, google, etc.
   clientId: text('client_id').notNull(),
   clientSecret: text('client_secret'), // Encrypted in production
@@ -113,27 +113,27 @@ export const oauthApps = pgTable('oauth_apps', {
 
 // Integrations table
 export const integrations = pgTable('integrations', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id').references(() => users.id).notNull(),
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
   platform: varchar('platform', { length: 50 }).notNull(), // facebook, twitter, gmail, etc.
   accessToken: text('access_token'),
   refreshToken: text('refresh_token'),
   expiresAt: timestamp('expires_at'),
   metadata: jsonb('metadata'),
   isActive: boolean('is_active').default(true),
-  oauthAppId: uuid('oauth_app_id').references(() => oauthApps.id), // Link to OAuth app used
+  oauthAppId: integer('oauth_app_id').references(() => oauthApps.id), // Link to OAuth app used
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 });
 
 export const comments = pgTable('comments', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id').references(() => users.id).notNull(),
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
   platform: varchar('platform', { length: 50 }).notNull(),
   platformPostId: varchar('platform_post_id', { length: 255 }),
   platformCommentId: varchar('platform_comment_id', { length: 255 }),
   content: text('content').notNull(),
-  parentCommentId: uuid('parent_comment_id'),
+  parentCommentId: integer('parent_comment_id'),
   isReply: boolean('is_reply').default(false),
   status: varchar('status', { length: 20 }).default('sent'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
@@ -141,9 +141,9 @@ export const comments = pgTable('comments', {
 });
 
 export const campaigns = pgTable('campaigns', {
-  id: uuid('id').defaultRandom().primaryKey(),
-  userId: uuid('user_id').references(() => users.id).notNull(),
-  integrationId: uuid('integration_id').references(() => integrations.id).notNull(),
+  id: serial('id').primaryKey(),
+  userId: integer('user_id').references(() => users.id).notNull(),
+  integrationId: integer('integration_id').references(() => integrations.id).notNull(),
   platform: varchar('platform', { length: 50 }).notNull(),
   platformCampaignId: varchar('platform_campaign_id', { length: 255 }),
   name: varchar('name', { length: 255 }).notNull(),
@@ -155,6 +155,27 @@ export const campaigns = pgTable('campaigns', {
   metadata: jsonb('metadata'),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Support Chat Conversations table
+export const supportChats = pgTable('support_chats', {
+  id: serial('id').primaryKey(),
+  userId: text('user_id').notNull(), // UUID stored as text
+  title: varchar('title', { length: 255 }),
+  status: varchar('status', { length: 20 }).default('active'), // active, resolved, archived
+  metadata: jsonb('metadata'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+  updatedAt: timestamp('updated_at').defaultNow().notNull(),
+});
+
+// Support Chat Messages table
+export const supportChatMessages = pgTable('support_chat_messages', {
+  id: serial('id').primaryKey(),
+  chatId: integer('chat_id').references(() => supportChats.id, { onDelete: 'cascade' }).notNull(),
+  role: varchar('role', { length: 20 }).notNull(), // user, assistant
+  content: text('content').notNull(),
+  metadata: jsonb('metadata'), // For storing tokens used, model info, etc.
+  createdAt: timestamp('created_at').defaultNow().notNull(),
 });
 
 // Relations
@@ -259,5 +280,17 @@ export const userRolesRelations = relations(userRoles, ({ one }) => ({
   assignedByUser: one(users, {
     fields: [userRoles.assignedBy],
     references: [users.id],
+  }),
+}));
+
+// Support Chat Relations
+export const supportChatsRelations = relations(supportChats, ({ many }) => ({
+  messages: many(supportChatMessages),
+}));
+
+export const supportChatMessagesRelations = relations(supportChatMessages, ({ one }) => ({
+  chat: one(supportChats, {
+    fields: [supportChatMessages.chatId],
+    references: [supportChats.id],
   }),
 }));
